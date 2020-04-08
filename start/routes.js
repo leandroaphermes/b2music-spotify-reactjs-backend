@@ -16,6 +16,5 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
-})
+Route.get('/users', 'UserController.index')
+Route.post('/users', 'UserController.store').validator('UserStore')
