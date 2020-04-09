@@ -1,27 +1,15 @@
 'use strict'
 
-const { test, trait } = use('Test/Suite')('Users')
+const { test, trait } = use('Test/Suite')('Authors')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const User = use('App/Models/User');
+const Authors = use('App/Models/Authors');
 
 trait('Test/ApiClient')
 
-test('Listando Usuarios', async ({ assert, client }) => {
+test('Criando um Artista na tabela de Authors', async ({ client }) => {
 
-  const list = await User.all();
-
-
-  const response = await client.get('/users').end()
-
-
-  response.assertStatus(200)
-  assert.isArray(response.body)
-})
-
-test('Criando Usuario', async ({ client }) => {
-
-  const user = {
+/*   const user = {
     username: 'leandro',
     email: 'leandro@leandro.com',
     password: '123123',
@@ -43,5 +31,5 @@ test('Criando Usuario', async ({ client }) => {
     username: user.username,
     email: user.email,
     truename: user.truename
-  })
+  }) */
 })
