@@ -1,35 +1,34 @@
 'use strict'
 
-const { test, trait } = use('Test/Suite')('Authors')
+const { test, trait } = use('Test/Suite')('Author')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Authors = use('App/Models/Authors');
+const Author = use('App/Models/Author');
+
+/** @type {import('@adonisjs/lucid/src/Factory')} */
+const Factory = use('Factory');
 
 trait('Test/ApiClient')
 
-test('Criando um Artista na tabela de Authors', async ({ client }) => {
+test('Listando Artistas', async ({ assert, client }) => {
 
-/*   const user = {
-    username: 'leandro',
-    email: 'leandro@leandro.com',
-    password: '123123',
-    password_confirmation: '123123',
-    truename: 'leandro hermes',
-    phone: '(99) 99999-9999',
-    gender: 'M',
-    birth: '2020-12-30',
-    country: 'brazil',
-    province: 'mt'
-  }
+  const response = await client.get('/authors').end()
 
-  const response = await client.post('/users')
-  .send(user)
+  response.assertStatus(200)
+  assert.isArray(response.body)
+})
+
+test('Criando um Artista na tabela de Author', async ({ client }) => {
+
+  const data = await Factory.model('App/Models/Author').make()
+  
+  const response = await client.post('/authors')
+  .send(data)
   .end()
 
   response.assertStatus(201)
   response.assertJSONSubset({
-    username: user.username,
-    email: user.email,
-    truename: user.truename
-  }) */
+    name: data.name,
+    site: data.site
+  })
 })

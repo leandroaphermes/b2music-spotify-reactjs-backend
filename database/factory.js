@@ -11,8 +11,8 @@
 |
 */
 
-// /** @type {import('@adonisjs/lucid/src/Factory')} */
-// const Factory = use('Factory')
+/** @type {import('@adonisjs/lucid/src/Factory')} */
+const Factory = use('Factory')
 
 /* Factory.blueprint('App/Models/User', (faker) => {
     return {
@@ -28,3 +28,17 @@
         province: faker.province()
     }
 }) */
+
+Factory.blueprint('App/Models/Author', (faker) => {
+    let nickname = faker.username()
+    return {
+        name: faker.name(),
+        photo_url: `${faker.avatar({protocol: 'https', fileExtension: 'jpg' })}?s=320`,
+        bio: faker.paragraph(),
+        site: faker.domain(),
+        wiki: faker.domain(),
+        instagram: nickname,
+        twitter: nickname,
+        facebook: nickname
+    }
+})

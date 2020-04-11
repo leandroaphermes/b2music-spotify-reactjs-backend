@@ -1,8 +1,9 @@
 'use strict' 
 
 const { rule } = use('Validator')
+const Antl = use('Antl')
 
-class User {
+class UserStore {
   get validateAll () {
     return true
   }
@@ -24,32 +25,27 @@ class User {
       province: "required|string|alpha|min:2|max:5"
     }
   }
-  get messages () {
-    return {
-      integer: "{{ field }} is value type Integer",
-      string: "{{ field }} is value type String",
-      required: "{{ field }} is required to create new account",
-      email: "{{ field }} is not a valid email",
-      alpha: "{{ field }} can only contain letters",
-      alpha_numeric: "{{ field }} can only contain letters and number",
-      same: "{{ field }} value must be equal to {{ argument.0 }}",
-      dateFormat: "{{ field }} date format required {{ argument.0 }}",
-      min: "{{ field }} value must be greater than or equal to {{ argument.0 }}",
-      max: "{{ field }} value must be less than or equal to {{ args.0 }}",
-      in: " {{ field }} value must be {{ argument.0 }} or {{ argument.1 }}"
-    }
-  }
   get sanitizationRules () {
     return {
+      username: [ rule("trim") ],
       email: [
         rule("normalize_email", {
           all_lowercase: true,
           icloud_remove_subaddress: true
         }),
         rule("trim")
-      ]
+      ],
+      password: [ rule("trim") ],
+      truename: [ rule("trim") ],
+      phone: [ rule("trim") ],
+      gender: [ rule("trim") ],
+      country: [ rule("trim") ],
+      province: [ rule("trim") ]
     }
+  }
+  get messages () {
+    return Antl.list('validation')
   }
 }
 
-module.exports = User
+module.exports = UserStore

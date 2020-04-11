@@ -18,3 +18,7 @@ const Route = use('Route')
 
 Route.get('/users', 'UserController.index')
 Route.post('/users', 'UserController.store').validator('UserStore')
+
+
+Route.get('/authors', 'AuthorController.index')
+Route.post('/authors', 'AuthorController.store').validator('AuthorStore')
