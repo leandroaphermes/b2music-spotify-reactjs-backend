@@ -20,15 +20,34 @@ test('Listando Artistas', async ({ assert, client }) => {
 
 test('Criando um Artista na tabela de Author', async ({ client }) => {
 
-  const data = await Factory.model('App/Models/Author').make()
+  const {
+    name, 
+    photo_url,
+    bio,
+    site,
+    wikipedia,
+    instagram,
+    twitter,
+    facebook
+  } = await Factory.model('App/Models/Author').make()
+
   
   const response = await client.post('/authors')
-  .send(data)
+  .send({
+    name, 
+    photo_url,
+    bio,
+    site,
+    wikipedia,
+    instagram,
+    twitter,
+    facebook
+  })
   .end()
 
   response.assertStatus(201)
   response.assertJSONSubset({
-    name: data.name,
-    site: data.site
+    name,
+    site
   })
 })

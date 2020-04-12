@@ -12,13 +12,19 @@ class AuthorController {
 
     async store({ request, response }){
         
-        const data = request.post()
-
-        console.log('---> Data: ', data)
+        const data = request.only([ 
+            "name",
+            "photo_url",
+            "bio",
+            "site",
+            "wikipedia",
+            "instagram",
+            "twitter",
+            "facebook"
+        ])
         const dataRes = await Author.create(data)
-
-        //response.status(201).send(dataRes)
-        return dataRes
+        response.status(201).send(dataRes)
+        return data 
     }
 
 }

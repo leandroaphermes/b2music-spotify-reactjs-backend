@@ -12,17 +12,18 @@ class UserController {
 
 	async store ({ request, response }){
 		let data = request.only([
-				"username",
-				"email",
-				"password",
-				"password_confirmation",
-				"truename",
-				"phone",
-				"gender",
-				"birth",
-				"country",
-				"province"
+			"username",
+			"email",
+			"password",
+			"password_confirmation",
+			"truename",
+			"phone",
+			"gender",
+			"birth",
+			"country",
+			"province"
 		])
+		
 		delete data.password_confirmation
 		const dataRes = await User.create(data)
 		response.status(201).send(dataRes)

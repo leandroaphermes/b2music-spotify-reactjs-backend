@@ -34,9 +34,9 @@ Factory.blueprint('App/Models/Author', (faker) => {
     return {
         name: faker.name(),
         photo_url: `${faker.avatar({protocol: 'https', fileExtension: 'jpg' })}?s=320`,
-        bio: faker.paragraph(),
+        bio: faker.paragraph({ sentences: 1 }),
         site: faker.domain(),
-        wiki: faker.domain(),
+        wikipedia: faker.domain(),
         instagram: nickname,
         twitter: nickname,
         facebook: nickname

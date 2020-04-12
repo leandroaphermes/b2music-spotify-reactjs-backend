@@ -1,6 +1,7 @@
 'use strict' 
 
 const { rule } = use('Validator')
+
 const Antl = use('Antl')
 
 class UserStore {
