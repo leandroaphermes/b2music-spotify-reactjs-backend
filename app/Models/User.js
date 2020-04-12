@@ -21,6 +21,17 @@ class User extends Model {
     })
   }
 
+  static get dates() {
+    return super.dates.concat(['birth'])
+  }
+  
+  static castDates(field, value) {
+    if (field === 'birth') {
+      return value.format('YYYY-MM-DD')
+    }
+    return super.formatDates(field, value)
+  }
+
   /**
    * A relationship on tokens is required for auth to
    * work. Since features like `refreshTokens` or
