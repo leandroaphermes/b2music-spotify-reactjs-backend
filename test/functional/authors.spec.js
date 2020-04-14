@@ -12,10 +12,13 @@ trait('Test/ApiClient')
 
 test('Listando Artistas', async ({ assert, client }) => {
 
+  await Factory.model('App/Models/Author').create()
+
   const response = await client.get('/authors').end()
 
   response.assertStatus(200)
   assert.isArray(response.body)
+  assert.lengthOf(response.body, 1)
 })
 
 test('Criando um Artista na tabela de Author', async ({ client }) => {

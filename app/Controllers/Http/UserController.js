@@ -1,6 +1,6 @@
 'use strict'
 
-const { validate, validations } = use('indicative/validator')
+const { validateAll, validations } = use('indicative/validator')
 const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
@@ -50,12 +50,12 @@ class UserController {
 			email: "trim|lower_case|normalize_email",
 			truename: "trim|lower_case",
 			phone: "trim|lower_case",
-			gender: "trim|lower_case",
+			gender: "trim|upper_case",
 			country: "trim|lower_case",
 			province: "trim|lower_case"
 		}
 
-		await validate(data, rules, Antl.list('validation'))
+		await validateAll(data, rules, Antl.list('validation'))
 		.then( async () => {
 
 			sanitize(data, sintatization)

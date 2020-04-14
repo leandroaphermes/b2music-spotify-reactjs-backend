@@ -14,20 +14,19 @@
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use('Factory')
 
-/* Factory.blueprint('App/Models/User', (faker) => {
+Factory.blueprint('App/Models/User', (faker, i, data = { }) => {
     return {
         username: faker.username(),
         email: faker.email(),
-        password: '123123',
-        password_confirmation: '123123',
         truename: faker.name(),
         phone: faker.phone(),
         gender: faker.string({ pool: 'MF', length: 1 }),
         birth: '2020-12-30',
         country: faker.country({ full: true }),
-        province: faker.province()
+        province: faker.province(),
+        ...data
     }
-}) */
+}) 
 
 Factory.blueprint('App/Models/Author', (faker) => {
     let nickname = faker.username()
