@@ -21,7 +21,7 @@ test('Listando Usuarios', async ({ assert, client }) => {
 
   response.assertStatus(200)
   assert.isArray(response.body)
-  assert.lengthOf(response.body, 1)
+  assert.isNotEmpty(response.body)
 })
 
 test('Criando Usuario', async ({ client }) => {
@@ -63,3 +63,17 @@ test('Criando Usuario', async ({ client }) => {
     email
   })
 })
+
+test('Pegando o Usuario via ID', async ({ assert, client }) => {
+
+  const { id } = await Factory.model('App/Models/User').create({
+    password: '123123',
+  })
+
+  const response = await client.get(`/users/id/${id}`).end()
+
+  response.assertStatus(200)
+  assert.isArray(response.body)
+  assert.isNotEmpty(response.body)
+})
+

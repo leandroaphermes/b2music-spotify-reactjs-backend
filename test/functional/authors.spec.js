@@ -18,7 +18,7 @@ test('Listando Artistas', async ({ assert, client }) => {
 
   response.assertStatus(200)
   assert.isArray(response.body)
-  assert.lengthOf(response.body, 1)
+  assert.isNotEmpty(response.body)
 })
 
 test('Criando um Artista na tabela de Author', async ({ client }) => {

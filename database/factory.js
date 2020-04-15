@@ -28,16 +28,35 @@ Factory.blueprint('App/Models/User', (faker, i, data = { }) => {
     }
 }) 
 
+
 Factory.blueprint('App/Models/Author', (faker) => {
     let nickname = faker.username()
     return {
         name: faker.name(),
         photo_url: `${faker.avatar({protocol: 'https', fileExtension: 'jpg' })}?s=320`,
         bio: faker.paragraph({ sentences: 1 }),
-        site: faker.domain(),
-        wikipedia: faker.domain(),
+        site: faker.url({protocol: 'https' }),
+        wikipedia: faker.url({domain: 'pt.wikipedia.org', protocol: 'https' }),
         instagram: nickname,
         twitter: nickname,
         facebook: nickname
+    }
+})
+
+
+Factory.blueprint('App/Models/Album', (faker, i , data) => {
+    return {
+        categories: faker.pickone(['single', 'ep', 'album']),
+        name: faker.name(),
+        photo_url: `${faker.avatar({protocol: 'https', fileExtension: 'jpg' })}?s=320`,
+        releasedt: '2020-01-30',
+        ...data
+    }
+})
+
+Factory.blueprint('App/Models/Genre', (faker, i , data) => {
+    return {
+        name: faker.name(),
+        description: faker.paragraph({ sentences: 1 }),
     }
 })
