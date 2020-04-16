@@ -15,30 +15,6 @@ class UserController {
 		return data
 	}
 
-	async show({ request, response }){
-
-		const data = request.params
-
-		const rules = {
-			id: "required|number"
-		}
-
-		await validateAll(data, rules, Antl.list('validation'))
-		.then( async()=>{
-			
-			const dataRes = await User.findOrFail(data.id)
-			
-			response.status(200).send(dataRes)
-		})
-		.catch( dataError => {
-			console.error("Erro Usuario: ", dataError);
-			response.status(422).send(dataError)
-		})
-
-
-	}
-
-
 	async store ({ request, response }){
 		let data = request.only([
 			"username",
@@ -68,8 +44,8 @@ class UserController {
 			],
 			country: [
 				validations.required(),
-				validations.min([4]),
-				validations.max([20]),
+				validations.min([3]),
+				validations.max([50]),
 				validations.regex(['\[a-zA-Z0-9\s]'])
 			],
 			province: "required|alpha|min:2|max:5"
@@ -96,6 +72,29 @@ class UserController {
 		})
 		.catch( (dataError) => {
             console.error("Erro Usuario: ", dataError)
+			response.status(422).send(dataError)
+		})
+
+	}
+
+	async show({ request, response }){
+
+		const data = request.params
+		const rules = {
+			id: "required|number"
+		}
+		await validateAll(data, rules, Antl.list('validation'))
+		.then( async () => {
+			try {
+				
+				const dataRes = await User.findOrFail(data.id)
+				response.status(200).send(dataRes)
+			} catch (error) {
+				response.status(500).send()
+			}
+		})
+		.catch( dataError => {
+			console.error("Erro Usuario: ", dataError);
 			response.status(422).send(dataError)
 		})
 

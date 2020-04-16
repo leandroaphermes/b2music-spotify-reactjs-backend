@@ -7,6 +7,7 @@ class TracksSchema extends Schema {
   up () {
     this.create('tracks', (table) => {
       table.increments()
+      table.string('name', 100)
       table
         .integer('album_id')
         .unsigned()
@@ -15,9 +16,9 @@ class TracksSchema extends Schema {
         .notNullable()
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
-      table.integer ('playtime')
-      table.string('name', 100)
-      table.string('url')
+      table.string('src')
+      table.integer('duration').notNullable()
+      table.integer('playcount').unsigned().defaultTo(0)
       table.timestamps()
     })
   }

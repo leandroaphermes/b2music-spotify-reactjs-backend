@@ -14,7 +14,7 @@ class UserSchema extends Schema {
       table.string('phone', 20).notNullable()
       table.enu('gender', ["F", "M"]).notNullable()
       table.date('birth').notNullable()
-      table.string('country', 20).notNullable()
+      table.string('country', 50).notNullable()
       table.string('province', 5).notNullable()
       table.timestamps()
     })

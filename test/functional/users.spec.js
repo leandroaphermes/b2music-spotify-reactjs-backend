@@ -1,9 +1,6 @@
 'use strict'
 
-const { test, trait } = use('Test/Suite')('Users')
-
-/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const User = use('App/Models/User');
+const { test, trait } = use('Test/Suite')('User')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use('Factory');
@@ -73,7 +70,9 @@ test('Pegando o Usuario via ID', async ({ assert, client }) => {
   const response = await client.get(`/users/id/${id}`).end()
 
   response.assertStatus(200)
-  assert.isArray(response.body)
-  assert.isNotEmpty(response.body)
+  assert.isObject(response.body)
+  assert.exists(response.body.id, 'Not exist\'s id')
+  assert.exists(response.body.email, 'Not exist\'s email')
+  assert.exists(response.body.truename, 'Not exist\'s truename')
 })
 

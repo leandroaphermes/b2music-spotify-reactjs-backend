@@ -70,6 +70,29 @@ class AlbumController {
 
     }
 
+    async show ({ request, response }) {
+
+        const data = request.params
+        const rules = {
+            id: "required|number"
+        }
+
+        await validateAll(data, rules, Antl.list('validation'))
+        .then( async () => {
+            try {
+                const dataRes = await Album.findOrFail(data.id)
+                response.status(200).send(dataRes)
+            } catch (error) {
+                response.status(500).send()
+            }
+        })
+        .catch( dataError => {
+            console.log("Validator Error", dataError)
+            response.status(422).send(dataError)
+        })
+
+    }
+
 }
 
 module.exports = AlbumController

@@ -2,9 +2,6 @@
 
 const { test, trait } = use('Test/Suite')('Author')
 
-/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Author = use('App/Models/Author');
-
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use('Factory');
 
@@ -53,4 +50,16 @@ test('Criando um Artista na tabela de Author', async ({ client }) => {
     name,
     site
   })
+})
+
+test('Pegando um Artista via ID', async ({ assert, client }) => {
+
+  const { id } = await Factory.model('App/Models/Author').create()
+
+  const response = await client.get(`/authors/id/${id}`).end()
+
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.id, 'Not exist\'s id')
+  assert.exists(response.body.name, 'Not exist\'s name')
 })

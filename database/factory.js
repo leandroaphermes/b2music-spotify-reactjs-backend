@@ -28,7 +28,6 @@ Factory.blueprint('App/Models/User', (faker, i, data = { }) => {
     }
 }) 
 
-
 Factory.blueprint('App/Models/Author', (faker) => {
     let nickname = faker.username()
     return {
@@ -43,8 +42,7 @@ Factory.blueprint('App/Models/Author', (faker) => {
     }
 })
 
-
-Factory.blueprint('App/Models/Album', (faker, i , data) => {
+Factory.blueprint('App/Models/Album', (faker, i , data = { }) => {
     return {
         categories: faker.pickone(['single', 'ep', 'album']),
         name: faker.name(),
@@ -54,9 +52,29 @@ Factory.blueprint('App/Models/Album', (faker, i , data) => {
     }
 })
 
-Factory.blueprint('App/Models/Genre', (faker, i , data) => {
+Factory.blueprint('App/Models/Genre', (faker, i , data = { }) => {
     return {
         name: faker.name(),
         description: faker.paragraph({ sentences: 1 }),
+    }
+})
+
+Factory.blueprint('App/Models/Track', (faker, i , data = { }) => {
+    return {
+        name: faker.name(),
+        src: `track-${faker.timestamp()}.mp3`,
+        duration: faker.integer({ min: 60, max: 600 }),
+        playcount: 0,
+        ...data
+    }
+})
+
+Factory.blueprint('App/Models/Track', (faker, i , data = { }) => {
+    return {
+        name: faker.name(),
+        src: `track-${faker.timestamp()}.mp3`,
+        duration: faker.integer({ min: 60, max: 600 }),
+        playcount: 0,
+        ...data
     }
 })

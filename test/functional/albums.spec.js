@@ -9,7 +9,6 @@ trait('Test/ApiClient')
 
 test('Listando Albums', async ({ assert, client }) => {
 
-
   const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   
@@ -25,8 +24,7 @@ test('Listando Albums', async ({ assert, client }) => {
   assert.isNotEmpty(response.body)
 })
 
-
-test('Criando um Artista na tabela de Album', async ({ client }) => {
+test('Criando um Album na tabela de Album', async ({ client }) => {
 
   const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
@@ -59,4 +57,24 @@ test('Criando um Artista na tabela de Album', async ({ client }) => {
     genre_id,
     author_id
   })
+})
+
+test('Pegando Album via ID', async ({ assert, client }) => {
+
+  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
+  const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
+  
+  const { id } = await Factory.model('App/Models/Album').create({
+    genre_id: factoryGenre_id,
+    author_id: factoryAuthor_id
+  })
+
+  const response = await client.get(`/albums/id/${id}`).end()
+
+  
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.id, 'Not exist\'s id')
+  assert.exists(response.body.name, 'Not exist\'s name')
+
 })
