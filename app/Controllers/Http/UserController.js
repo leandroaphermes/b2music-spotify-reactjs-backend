@@ -46,7 +46,7 @@ class UserController {
 				validations.required(),
 				validations.min([3]),
 				validations.max([50]),
-				validations.regex(['\[a-zA-Z0-9\s]'])
+				validations.regex(["[a-zA-Z\s]+"])
 			],
 			province: "required|alpha|min:2|max:5"
 		}

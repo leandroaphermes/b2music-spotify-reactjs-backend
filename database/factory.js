@@ -68,13 +68,10 @@ Factory.blueprint('App/Models/Track', (faker, i , data = { }) => {
         ...data
     }
 })
-
+/* 
 Factory.blueprint('App/Models/Track', (faker, i , data = { }) => {
     return {
         name: faker.name(),
-        src: `track-${faker.timestamp()}.mp3`,
-        duration: faker.integer({ min: 60, max: 600 }),
-        playcount: 0,
-        ...data
     }
 })
+ */

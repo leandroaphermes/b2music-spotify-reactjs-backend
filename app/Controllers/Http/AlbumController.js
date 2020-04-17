@@ -35,7 +35,7 @@ class AlbumController {
                 validations.required(),
                 validations.min([ 3 ]),
                 validations.max([ 100 ]),
-                validations.regex(['^[a-zA-Z0-9\s]']),
+                validations.regex(["^[\\w\-\\s]+"])
             ],
             categories: "in:single,ep,album",
             releasedt: [

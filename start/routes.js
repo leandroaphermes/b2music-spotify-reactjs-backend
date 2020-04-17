@@ -29,3 +29,6 @@ Route.get('/authors/id/:id', 'AuthorController.show')
 Route.get('/albums', 'AlbumController.index')
 Route.post('/albums', 'AlbumController.store')
 Route.get('/albums/id/:id', 'AlbumController.show')
+
+Route.get('/tracks', 'TrackController.index')
+Route.post('/tracks', 'TrackController.store')
