@@ -7,7 +7,7 @@ const Factory = use('Factory');
 
 trait('Test/ApiClient')
 
-test('Listando todas as Tacks', async ({ assert, client }) => {
+test('Listando todas as Tracks', async ({ assert, client }) => {
 
   const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
@@ -27,7 +27,7 @@ test('Listando todas as Tacks', async ({ assert, client }) => {
   response.assertStatus(200)
   assert.isArray(response.body)
   assert.isNotEmpty(response.body)
-})
+}).timeout(6000)
 
 test('Criando uma Track na tabela track', async ({ assert, client }) => {
 
@@ -52,7 +52,7 @@ test('Criando uma Track na tabela track', async ({ assert, client }) => {
   assert.exists(response.body.name, 'Not exist\'s name')
   assert.isNumber(response.body.album_id, 'Not exist\'s album_id')
 
-})
+}).timeout(6000)
 
 test('Pegando uma Track via ID', async ({ assert, client }) => {
 
@@ -76,4 +76,4 @@ test('Pegando uma Track via ID', async ({ assert, client }) => {
   assert.isNumber(response.body.id, 'Not exist\'s id')
   assert.exists(response.body.name, 'Not exist\'s name')
 
-})
+}).timeout(6000)

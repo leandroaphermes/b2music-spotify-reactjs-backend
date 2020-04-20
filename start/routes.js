@@ -30,6 +30,13 @@ Route.get('/albums', 'AlbumController.index')
 Route.post('/albums', 'AlbumController.store')
 Route.get('/albums/:id', 'AlbumController.show')
 
+
 Route.get('/tracks', 'TrackController.index')
 Route.post('/tracks', 'TrackController.store')
+Route.get('tracks/file/:file', 'TrackController.file')
 Route.get('/tracks/:id', 'TrackController.show')
+
+
+Route.get('/playlists', 'PlaylistController.index')
+Route.post('/playlists', 'PlaylistController.store')
+

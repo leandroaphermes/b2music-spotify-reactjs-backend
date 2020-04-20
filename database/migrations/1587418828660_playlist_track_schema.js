@@ -3,15 +3,15 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class AuthorTrackSchema extends Schema {
+class PlaylistTrackSchema extends Schema {
   up () {
-    this.create('author_track', (table) => {
+    this.create('playlist_track', (table) => {
       table.increments()
       table
-        .integer('author_id')
+        .integer('playlist_id')
         .unsigned()
         .references('id')
-        .inTable('authors')
+        .inTable('playlists')
         .notNullable()
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
@@ -23,12 +23,13 @@ class AuthorTrackSchema extends Schema {
         .notNullable()
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
+      table.timestamps()
     })
   }
 
   down () {
-    this.drop('author_track')
+    this.drop('playlist_track')
   }
 }
 
-module.exports = AuthorTrackSchema
+module.exports = PlaylistTrackSchema

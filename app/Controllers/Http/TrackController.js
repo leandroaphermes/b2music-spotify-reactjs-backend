@@ -1,5 +1,8 @@
 'use strict'
 
+const Env = use('Env')
+const Helpers = use('Helpers')
+
 /** @type {typeof import('indicative/src/Validator')} */
 const { validateAll, validations } = use('indicative/validator')
 
@@ -9,6 +12,7 @@ const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Track = use('App/Models/Track');
+
 
 
 class TrackController {
@@ -22,8 +26,15 @@ class TrackController {
     async store({ request, response }){
 
         let data = request.only([
-            "name", "album_id", "authors_id", "src", "duration", "playcount"
+            "name", "album_id", "authors_id", "duration"
         ])
+        
+        const track_file = request.file("track_file", {
+            type: ['audio'],
+            size: '10mb',
+            extnames: [ 'mp3' ]
+        })
+        
 
         const rules = {
             name: [
@@ -36,7 +47,6 @@ class TrackController {
             album_id: "required|number",
             authors_id: "required|array",
             'authors_id.*.author_id': "required|integer",
-            src: "required|string|min:6|max:255",
             duration: "required|number"
         }
 
@@ -50,6 +60,19 @@ class TrackController {
 
                 let authors = data.authors_id
                 delete data.authors_id
+
+               if(track_file){
+                    
+                    data.src = `track-${new Date().getTime()}.mp3`
+
+                    await track_file.move(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/tracks`), {
+                        name: data.src,
+                        overwrite: true
+                    })
+                    if (!track_file.moved()) {
+                        return track_file.error()
+                    }
+               }
 
                 const dataRes = await Track.create(data)
                 await dataRes.authors().attach( authors )
@@ -88,6 +111,12 @@ class TrackController {
             console.log(dataError)
             response.status(422).send(dataError)
         })
+
+    }
+
+    file({ params, response}){
+
+        return response.download(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/tracks/${params.file}`))
 
     }
 
