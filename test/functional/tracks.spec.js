@@ -9,23 +9,24 @@ trait('Test/ApiClient')
 
 test('Listando todas as Tacks', async ({ assert, client }) => {
 
-    const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
-    const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
-    const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
-      genre_id: factoryGenre_id,
-      author_id: factoryAuthor_id,
-      categories: 'single'
-    })
+  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
+  const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
+  const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
+    genre_id: factoryGenre_id,
+    author_id: factoryAuthor_id,
+    categories: 'single'
+  })
 
-    await Factory.model('App/Models/Track').create({
-        album_id: factoryAlbum_id
-    })
+  const track = await Factory.model('App/Models/Track').create({
+    album_id: factoryAlbum_id
+  })
+  await track.authors().attach([ factoryAuthor_id ])
 
-    const response = await client.get('/tracks').end()
+  const response = await client.get('/tracks').end()
 
-    response.assertStatus(200)
-    assert.isArray(response.body)
-    assert.isNotEmpty(response.body)
+  response.assertStatus(200)
+  assert.isArray(response.body)
+  assert.isNotEmpty(response.body)
 })
 
 test('Criando uma Track na tabela track', async ({ assert, client }) => {
@@ -39,12 +40,8 @@ test('Criando uma Track na tabela track', async ({ assert, client }) => {
   })
 
   const { name, album_id, authors_id, src, duration, playcount } = await Factory.model('App/Models/Track').make({
-      album_id: factoryAlbum_id,
-      authors_id: [
-        {
-          id: factoryAuthor_id
-        }
-      ]
+    album_id: factoryAlbum_id,
+    authors_id: [ factoryAuthor_id ]
   })
 
   const response = await client.post('/tracks').send({ name, album_id, authors_id, src, duration, playcount }).end()
@@ -54,5 +51,29 @@ test('Criando uma Track na tabela track', async ({ assert, client }) => {
   assert.isNumber(response.body.id, 'Not exist\'s id')
   assert.exists(response.body.name, 'Not exist\'s name')
   assert.isNumber(response.body.album_id, 'Not exist\'s album_id')
+
+})
+
+test('Pegando uma Track via ID', async ({ assert, client }) => {
+
+  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
+  const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
+  const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
+    genre_id: factoryGenre_id,
+    author_id: factoryAuthor_id,
+    categories: 'single'
+  })
+
+  const track = await Factory.model('App/Models/Track').create({
+    album_id: factoryAlbum_id
+  })
+  await track.authors().attach([ factoryAuthor_id ])
+
+  const response = await client.get(`/tracks/${track.id}`).end()
+
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.isNumber(response.body.id, 'Not exist\'s id')
+  assert.exists(response.body.name, 'Not exist\'s name')
 
 })

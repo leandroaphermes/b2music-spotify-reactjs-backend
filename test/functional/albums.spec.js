@@ -69,7 +69,7 @@ test('Pegando Album via ID', async ({ assert, client }) => {
     author_id: factoryAuthor_id
   })
 
-  const response = await client.get(`/albums/id/${id}`).end()
+  const response = await client.get(`/albums/${id}`).end()
 
   
   response.assertStatus(200)

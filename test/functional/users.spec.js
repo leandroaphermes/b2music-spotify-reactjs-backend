@@ -67,7 +67,7 @@ test('Pegando o Usuario via ID', async ({ assert, client }) => {
     password: '123123',
   })
 
-  const response = await client.get(`/users/id/${id}`).end()
+  const response = await client.get(`/users/${id}`).end()
 
   response.assertStatus(200)
   assert.isObject(response.body)

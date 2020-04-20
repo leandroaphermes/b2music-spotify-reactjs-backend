@@ -18,17 +18,18 @@ const Route = use('Route')
 
 Route.get('/users', 'UserController.index')
 Route.post('/users', 'UserController.store')
-Route.get('/users/id/:id', 'UserController.show')
+Route.get('/users/:id', 'UserController.show')
 
 
 Route.get('/authors', 'AuthorController.index')
 Route.post('/authors', 'AuthorController.store')
-Route.get('/authors/id/:id', 'AuthorController.show')
+Route.get('/authors/:id', 'AuthorController.show')
 
 
 Route.get('/albums', 'AlbumController.index')
 Route.post('/albums', 'AlbumController.store')
-Route.get('/albums/id/:id', 'AlbumController.show')
+Route.get('/albums/:id', 'AlbumController.show')
 
 Route.get('/tracks', 'TrackController.index')
 Route.post('/tracks', 'TrackController.store')
+Route.get('/tracks/:id', 'TrackController.show')

@@ -56,7 +56,7 @@ test('Pegando um Artista via ID', async ({ assert, client }) => {
 
   const { id } = await Factory.model('App/Models/Author').create()
 
-  const response = await client.get(`/authors/id/${id}`).end()
+  const response = await client.get(`/authors/${id}`).end()
 
   response.assertStatus(200)
   assert.isObject(response.body)

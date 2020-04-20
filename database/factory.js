@@ -68,10 +68,3 @@ Factory.blueprint('App/Models/Track', (faker, i , data = { }) => {
         ...data
     }
 })
-/* 
-Factory.blueprint('App/Models/Track', (faker, i , data = { }) => {
-    return {
-        name: faker.name(),
-    }
-})
- */

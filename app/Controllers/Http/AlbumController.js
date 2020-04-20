@@ -35,7 +35,7 @@ class AlbumController {
                 validations.required(),
                 validations.min([ 3 ]),
                 validations.max([ 100 ]),
-                validations.regex(["^[\\w\-\\s]+"])
+                validations.regex( [new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g )] )
             ],
             categories: "in:single,ep,album",
             releasedt: [
@@ -83,6 +83,7 @@ class AlbumController {
                 const dataRes = await Album.findOrFail(data.id)
                 response.status(200).send(dataRes)
             } catch (error) {
+                console.log(error)
                 response.status(500).send()
             }
         })

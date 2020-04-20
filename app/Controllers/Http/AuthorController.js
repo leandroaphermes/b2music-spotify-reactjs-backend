@@ -35,7 +35,7 @@ class AuthorController {
                 validations.required(),
                 validations.min([ 3 ]),
                 validations.max([ 100 ]),
-                validations.regex(["^[\\w\-\\s]+"])
+                validations.regex( [new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g )] )
             ],
             photo_url: "required|url|min:4|max:255",
             bio: "required|string|min:4|max:2064",
