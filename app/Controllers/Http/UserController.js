@@ -10,6 +10,34 @@ const User = use('App/Models/User');
 
 class UserController {
 
+	async auth ({ request, auth, response }){
+
+		const data = request.only([
+			"email", "password"
+		])
+
+		const rules = {
+			email: "required|email|min:6|max:64",
+			password: "required|string|min:4|max:32"
+		}
+
+		await validateAll(data, rules, Antl.list('validator'))
+		.then( async () => {
+			try {
+				const { type, token, refreshToken } = await auth.attempt(data.email, data.password)
+				response.status(200).send({type, token, refreshToken})
+			} catch (error) {
+				response.status(422).send({
+					message: "Account not found"
+				})
+			}
+		})
+		.catch( dataError => {
+			response.status(422).send(dataError)
+		})
+
+	}
+
 	async index (){
 		const data = await User.all()
 		return data
@@ -62,13 +90,17 @@ class UserController {
 
 		await validateAll(data, rules, Antl.list('validation'))
 		.then( async () => {
+			try {
+				
+				sanitize(data, sintatization)
 
-			sanitize(data, sintatization)
+				delete data.password_confirmation
+				const dataRes = await User.create(data)
+				response.status(201).send(dataRes)
 
-			delete data.password_confirmation
-			const dataRes = await User.create(data)
-			response.status(201).send(dataRes)
-
+			} catch (error) {
+				response.status(500).send()
+			}
 		})
 		.catch( (dataError) => {
             console.error("Erro Usuario: ", dataError)

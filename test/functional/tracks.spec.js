@@ -6,6 +6,12 @@ const { test, trait } = use('Test/Suite')('Track')
 const Factory = use('Factory');
 
 trait('Test/ApiClient')
+trait('Auth/Client')
+
+async function getUser(){
+  const user = await Factory.model('App/Models/User').create()
+  return user
+}
 
 test('Listando todas as Tracks', async ({ assert, client }) => {
 
@@ -22,7 +28,9 @@ test('Listando todas as Tracks', async ({ assert, client }) => {
   })
   await track.authors().attach([ factoryAuthor_id ])
 
-  const response = await client.get('/tracks').end()
+  const response = await client.get('/tracks')
+    .loginVia( await getUser() , 'jwt')
+    .end()
 
   response.assertStatus(200)
   assert.isArray(response.body)
@@ -44,7 +52,10 @@ test('Criando uma Track na tabela track', async ({ assert, client }) => {
     authors_id: [ factoryAuthor_id ]
   })
 
-  const response = await client.post('/tracks').send({ name, album_id, authors_id, src, duration, playcount }).end()
+  const response = await client.post('/tracks')
+    .send({ name, album_id, authors_id, src, duration, playcount })
+    .loginVia( await getUser() , 'jwt')
+    .end()
 
   response.assertStatus(201)
   assert.isObject(response.body)
@@ -69,7 +80,9 @@ test('Pegando uma Track via ID', async ({ assert, client }) => {
   })
   await track.authors().attach([ factoryAuthor_id ])
 
-  const response = await client.get(`/tracks/${track.id}`).end()
+  const response = await client.get(`/tracks/${track.id}`)
+    .loginVia( await getUser() , 'jwt')
+    .end()
 
   response.assertStatus(200)
   assert.isObject(response.body)

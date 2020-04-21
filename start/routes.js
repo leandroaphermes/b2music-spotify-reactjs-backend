@@ -16,27 +16,37 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/users', 'UserController.index')
-Route.post('/users', 'UserController.store')
-Route.get('/users/:id', 'UserController.show')
+Route.post('/auth', 'UserController.auth')
+Route.post('/register', 'UserController.store')
+
+Route.group( () => {
+
+    Route.get('/users', 'UserController.index')
+    Route.get('/users/:id', 'UserController.show')
+    
+
+    Route.get('/authors', 'AuthorController.index')
+    Route.post('/authors', 'AuthorController.store')
+    Route.get('/authors/:id', 'AuthorController.show')
+    
+    
+    Route.get('/albums', 'AlbumController.index')
+    Route.post('/albums', 'AlbumController.store')
+    Route.get('/albums/:id', 'AlbumController.show')
+    
+    
+    Route.get('/tracks', 'TrackController.index')
+    Route.post('/tracks', 'TrackController.store')
+    Route.get('tracks/file/:file', 'TrackController.file')
+    Route.get('/tracks/:id', 'TrackController.show')
+    
+    
+    Route.get('/playlists', 'PlaylistController.index')
+    Route.post('/playlists', 'PlaylistController.store')
+    Route.get('/playlists/:id', 'PlaylistController.show')
+
+}).middleware('auth').formats(['json'])
 
 
-Route.get('/authors', 'AuthorController.index')
-Route.post('/authors', 'AuthorController.store')
-Route.get('/authors/:id', 'AuthorController.show')
 
-
-Route.get('/albums', 'AlbumController.index')
-Route.post('/albums', 'AlbumController.store')
-Route.get('/albums/:id', 'AlbumController.show')
-
-
-Route.get('/tracks', 'TrackController.index')
-Route.post('/tracks', 'TrackController.store')
-Route.get('tracks/file/:file', 'TrackController.file')
-Route.get('/tracks/:id', 'TrackController.show')
-
-
-Route.get('/playlists', 'PlaylistController.index')
-Route.post('/playlists', 'PlaylistController.store')
 

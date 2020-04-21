@@ -13,7 +13,9 @@ const Playlist = use('App/Models/Playlist');
 class PlaylistController {
 
     async index(){
-        const data = await Playlist.all()
+        const data = await Playlist.query().with('owner', (bilder) => {
+            bilder.select([ 'id', 'truename', ])
+        }).fetch()
         return data
     }
 
@@ -33,19 +35,24 @@ class PlaylistController {
             ],
             description: [
                 validations.required(),
-                validations.max([255]),
-                validations.regex([ new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g ) ])
+                validations.max([255])
             ]
         }
 
 
         await validateAll(data, rules, Antl.list('validation'))
         .then( async () => {
+            try {
+                sanitize(data, {
+                    name: "trim"
+                })
 
-            console.log(data)
-            const dataRes = await Playlist.create(data)
-            response.status(201).send(dataRes)
-        } )
+                const dataRes = await Playlist.create(data)
+                response.status(201).send(dataRes)
+            } catch (error) {
+                response.status(500).send()
+            }
+        })
         .catch( dataErro => {
             console.log("Validate Error", dataErro)
             response.status(422).send(dataErro)
@@ -53,7 +60,34 @@ class PlaylistController {
 
 
     }
+    
+    async show({ request, response }) {
+        
+        const data = request.params
+        const rules = {
+            id: "required|number"
+        }
 
+        await validateAll(data, rules, Antl.list('validation'))
+        .then( async () => {
+            try {
+
+                const dataRes = await Playlist.query().where({ id: data.id }).with('owner', (bilder) => {
+                    bilder.select([ 'id', 'truename' ])
+                }).fetch()
+                response.status(200).send(dataRes)
+
+            } catch (error) {
+                response.status(500).send()
+            }
+        })
+        .catch( dataErro => {
+            console.log(dataErro)
+            response.status(422).send(dataErro)
+        })
+
+    }
+    
 }
 
 module.exports = PlaylistController

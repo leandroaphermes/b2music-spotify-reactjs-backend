@@ -19,6 +19,7 @@ Factory.blueprint('App/Models/User', (faker, i, data = { }) => {
         username: faker.username(),
         email: faker.email(),
         truename: faker.name(),
+        password: '123123',
         phone: faker.phone(),
         gender: faker.string({ pool: 'MF', length: 1 }),
         birth: '2020-12-30',

@@ -6,22 +6,25 @@ const { test, trait } = use('Test/Suite')('User')
 const Factory = use('Factory');
 
 trait('Test/ApiClient')
+trait('Auth/Client')
+
+async function getUser(){
+  const user = await Factory.model('App/Models/User').create()
+  return user
+}
 
 test('Listando Usuarios', async ({ assert, client }) => {
 
-  await Factory.model('App/Models/User').create({
-    password: '123123',
-  })
-
-  const response = await client.get('/users').end()
-
+  const response = await client.get('/users')
+    .loginVia( await getUser(), 'jwt')
+    .end()
 
   response.assertStatus(200)
   assert.isArray(response.body)
   assert.isNotEmpty(response.body)
 })
 
-test('Criando Usuario', async ({ client }) => {
+test('Criando Usuario', async ({ assert, client }) => {
 
   const {
     username,
@@ -39,7 +42,7 @@ test('Criando Usuario', async ({ client }) => {
     password_confirmation: '123123',
   })
 
-  const response = await client.post('/users')
+  const response = await client.post('/register')
   .send({
     username,
     email,
@@ -55,19 +58,34 @@ test('Criando Usuario', async ({ client }) => {
   .end()
 
   response.assertStatus(201)
-  response.assertJSONSubset({
-    username,
-    email
+  assert.isObject(response.body)
+  assert.exists(response.body.id)
+  assert.exists(response.body.email)
+})
+
+test('Fazendo login de Usuario comum', async ({ assert, client }) => {
+
+  const { email } = await Factory.model('App/Models/User').create({
+    password: '123123'
   })
+
+  const response = await client.post('/auth')
+  .send({ email, password:'123123' })
+  .end()
+  
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.token, 'Not exist Token')
+
 })
 
 test('Pegando o Usuario via ID', async ({ assert, client }) => {
 
-  const { id } = await Factory.model('App/Models/User').create({
-    password: '123123',
-  })
+  const user = await getUser()
 
-  const response = await client.get(`/users/${id}`).end()
+  const response = await client.get(`/users/${user.id}`)
+    .loginVia( user, 'jwt')
+    .end()
 
   response.assertStatus(200)
   assert.isObject(response.body)
@@ -75,4 +93,4 @@ test('Pegando o Usuario via ID', async ({ assert, client }) => {
   assert.exists(response.body.email, 'Not exist\'s email')
   assert.exists(response.body.truename, 'Not exist\'s truename')
 })
-
+ 

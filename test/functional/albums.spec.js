@@ -6,6 +6,13 @@ const { test, trait } = use('Test/Suite')('Album')
 const Factory = use('Factory');
 
 trait('Test/ApiClient')
+trait('Auth/Client')
+
+async function getUser(){
+  const user = await Factory.model('App/Models/User').create()
+  return user
+}
+
 
 test('Listando Albums', async ({ assert, client }) => {
 
@@ -17,7 +24,9 @@ test('Listando Albums', async ({ assert, client }) => {
     author_id: factoryAuthor_id
   })
   
-  const response = await client.get('/albums').end()
+  const response = await client.get('/albums')
+    .loginVia( await getUser() , 'jwt')
+    .end()
 
   response.assertStatus(200)
   assert.isArray(response.body)
@@ -42,15 +51,16 @@ test('Criando um Album na tabela de Album', async ({ client }) => {
   })
   
   const response = await client.post('/albums')
-  .send({ 
-    author_id, 
-    genre_id,
-    name,
-    categories,
-    releasedt,
-    photo_url
-   })
-  .end()
+    .send({ 
+      author_id, 
+      genre_id,
+      name,
+      categories,
+      releasedt,
+      photo_url
+    })
+    .loginVia( await getUser() , 'jwt')
+    .end()
 
   response.assertStatus(201)
   response.assertJSONSubset({
@@ -69,7 +79,9 @@ test('Pegando Album via ID', async ({ assert, client }) => {
     author_id: factoryAuthor_id
   })
 
-  const response = await client.get(`/albums/${id}`).end()
+  const response = await client.get(`/albums/${id}`)
+    .loginVia( await getUser() , 'jwt')
+    .end()
 
   
   response.assertStatus(200)

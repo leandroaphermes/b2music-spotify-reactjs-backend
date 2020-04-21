@@ -9,6 +9,10 @@ class Playlist extends Model {
         return this.belongsToMany('App/Models/Track').pivotTable('playlist_track')
     }
 
+    owner(){
+        return this.belongsTo('App/Models/User')
+    }
+
 }
 
 module.exports = Playlist
