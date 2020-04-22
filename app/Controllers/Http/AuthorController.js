@@ -62,13 +62,13 @@ class AuthorController {
 			sanitize(data, sintatization)
 
             const dataRes = await Author.create(data)
-            response.status(201).send(dataRes)
+            response.created(dataRes)
             return data
 
 		})
 		.catch( (dataError) => {
             console.log("Validator Error:", dataError, data.name)
-			response.status(422).send(dataError)
+			response.unprocessableEntity(dataError)
 		})
  
     }
@@ -84,14 +84,14 @@ class AuthorController {
             try {
 
                 const dataRes = await Author.findOrFail(data.id)
-                response.status(200).send(dataRes)
+                response.ok(dataRes)
             } catch (error) {
-                response.status(500).send()
+                response.internalServerError()
             }
         })
         .catch( dataError => {
 			console.error("Erro Author: ", dataError);
-            request.status(422).send(dataError)
+            request.unprocessableEntity(dataError)
         })
 
     }

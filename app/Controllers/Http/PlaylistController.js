@@ -48,14 +48,14 @@ class PlaylistController {
                 })
 
                 const dataRes = await Playlist.create(data)
-                response.status(201).send(dataRes)
+                response.created(dataRes)
             } catch (error) {
-                response.status(500).send()
+                response.internalServerError()
             }
         })
         .catch( dataErro => {
             console.log("Validate Error", dataErro)
-            response.status(422).send(dataErro)
+            response.unprocessableEntity(dataErro)
         })
 
 
@@ -74,16 +74,20 @@ class PlaylistController {
 
                 const dataRes = await Playlist.query().where({ id: data.id }).with('owner', (bilder) => {
                     bilder.select([ 'id', 'truename' ])
-                }).fetch()
-                response.status(200).send(dataRes)
+                }).first()
+                
+                if(dataRes === null){
+                   return response.notFound()
+                }
+                response.ok(dataRes)
 
             } catch (error) {
-                response.status(500).send()
+                response.internalServerError()
             }
         })
         .catch( dataErro => {
             console.log(dataErro)
-            response.status(422).send(dataErro)
+            response.unprocessableEntity(dataErro)
         })
 
     }

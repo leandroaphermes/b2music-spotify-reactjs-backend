@@ -29,7 +29,7 @@ test('Listando todas as Playlist', async ({ assert, client }) => {
     assert.isArray(response.body)
     assert.isNotEmpty(response.body)
 
-})
+}).timeout(6000)
 
 test('Criando uma Playlist na tabela Playlists', async ({ assert, client }) => {
 
@@ -48,7 +48,7 @@ test('Criando uma Playlist na tabela Playlists', async ({ assert, client }) => {
   assert.isNumber(response.body.id, 'Not exist\'s id')
   assert.exists(response.body.name, 'Not exist\'s name')
 
-})
+}).timeout(6000)
 
 test('Pegando uma Playlist via ID', async ({ assert, client }) => {
 
@@ -67,4 +67,4 @@ test('Pegando uma Playlist via ID', async ({ assert, client }) => {
   assert.isNumber(response.body.id)
   assert.exists(response.body.name)
 
-})
+}).timeout(6000)

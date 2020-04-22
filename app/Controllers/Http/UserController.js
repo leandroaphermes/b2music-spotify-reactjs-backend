@@ -25,15 +25,15 @@ class UserController {
 		.then( async () => {
 			try {
 				const { type, token, refreshToken } = await auth.attempt(data.email, data.password)
-				response.status(200).send({type, token, refreshToken})
+				response.ok({type, token, refreshToken})
 			} catch (error) {
-				response.status(422).send({
-					message: "Account not found"
+				response.unauthorized({
+					message: "User or password incorrect"
 				})
 			}
 		})
 		.catch( dataError => {
-			response.status(422).send(dataError)
+			response.unprocessableEntity(dataError)
 		})
 
 	}
@@ -96,15 +96,15 @@ class UserController {
 
 				delete data.password_confirmation
 				const dataRes = await User.create(data)
-				response.status(201).send(dataRes)
+				response.created(dataRes)
 
 			} catch (error) {
-				response.status(500).send()
+				response.internalServerError()
 			}
 		})
 		.catch( (dataError) => {
             console.error("Erro Usuario: ", dataError)
-			response.status(422).send(dataError)
+			response.unprocessableEntity(dataError)
 		})
 
 	}
@@ -120,14 +120,14 @@ class UserController {
 			try {
 				
 				const dataRes = await User.findOrFail(data.id)
-				response.status(200).send(dataRes)
+				response.ok(dataRes)
 			} catch (error) {
-				response.status(500).send()
+				response.internalServerError()
 			}
 		})
 		.catch( dataError => {
 			console.error("Erro Usuario: ", dataError);
-			response.status(422).send(dataError)
+			response.unprocessableEntity(dataError)
 		})
 
 	}

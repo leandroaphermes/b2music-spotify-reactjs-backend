@@ -77,15 +77,16 @@ class TrackController {
                 const dataRes = await Track.create(data)
                 await dataRes.authors().attach( authors )
 
-                response.status(201).send(dataRes)
+                response.created(dataRes)
             } catch (error) {
                 console.log(error)
+                response.internalServerError()
             }
 
         })
         .catch( dataError  => {
             console.log("Validator Error", dataError)
-            response.status(422).send(dataError)
+            response.unprocessableEntity(dataError)
         }) 
         
     }
@@ -102,14 +103,15 @@ class TrackController {
         .then( async () => {
             try {
                 const datRes = await Track.findOrFail(data.id)
-                response.status(200).send(datRes)
+                response.ok(datRes)
             } catch (error) {
                 console.log(error)
+                response.unprocessableEntity(dataError)
             }
         })
         .catch( dataError => {
             console.log(dataError)
-            response.status(422).send(dataError)
+            response.unprocessableEntity(dataError)
         })
 
     }

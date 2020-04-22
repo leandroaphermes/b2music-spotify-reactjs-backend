@@ -58,13 +58,13 @@ class AlbumController {
 			sanitize(data, sintatization)
 
             const dataRes = await Album.create(data)
-            response.status(201).send(dataRes)
+            response.created(dataRes)
             return data
 
         })
         .catch( dataError => {
             console.log("Validator Error:", dataError, data.name)
-			response.status(422).send(dataError)
+			response.unprocessableEntity(dataError)
         })
 
 
@@ -81,15 +81,15 @@ class AlbumController {
         .then( async () => {
             try {
                 const dataRes = await Album.findOrFail(data.id)
-                response.status(200).send(dataRes)
+                response.ok(dataRes)
             } catch (error) {
                 console.log(error)
-                response.status(500).send()
+                response.internalServerError()
             }
         })
         .catch( dataError => {
             console.log("Validator Error", dataError)
-            response.status(422).send(dataError)
+            response.unprocessableEntity(dataError)
         })
 
     }
