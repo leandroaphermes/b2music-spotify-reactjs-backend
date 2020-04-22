@@ -28,7 +28,7 @@ class UserController {
 				response.ok({type, token, refreshToken})
 			} catch (error) {
 				response.unauthorized({
-					message: "User or password incorrect"
+					message: Antl.formatMessage('authentication.incorrectEmailOrPassword')
 				})
 			}
 		})

@@ -5,10 +5,14 @@ const { validateAll, validations } = use('indicative/validator')
 
 /** @type {typeof import('indicative/src/Sanitizer')} */
 const { sanitize } = use('indicative/sanitizer')
+
+/** @type {typeof import('indicative/src/Sanitizer')} */
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Playlist = use('App/Models/Playlist');
+
+const Database = use('Database')
 
 class PlaylistController {
 
@@ -19,14 +23,13 @@ class PlaylistController {
         return data
     }
 
-    async store({ request, response }){
+    async store({ request, auth, response }){
 
-        const data = request.only([
-            "user_id", "name", "description"
+        let data = request.only([ 
+            "name", "description"
         ])
 
         const rules = {
-            user_id: "required|number",
             name: [
                 validations.required(),
                 validations.min([3]),
@@ -46,6 +49,8 @@ class PlaylistController {
                 sanitize(data, {
                     name: "trim"
                 })
+                
+                data.user_id = auth.user.id
 
                 const dataRes = await Playlist.create(data)
                 response.created(dataRes)
@@ -74,7 +79,7 @@ class PlaylistController {
 
                 const dataRes = await Playlist.query().where({ id: data.id }).with('owner', (bilder) => {
                     bilder.select([ 'id', 'truename' ])
-                }).first()
+                }).with('tracks').first()
                 
                 if(dataRes === null){
                    return response.notFound()
@@ -88,6 +93,49 @@ class PlaylistController {
         .catch( dataErro => {
             console.log(dataErro)
             response.unprocessableEntity(dataErro)
+        })
+
+    }
+
+    async storeTrack({ request, auth, response }){
+
+        const data = request.params
+        
+        const rules = {
+            id: "required|number",
+            track_id: "required|number"
+        }
+
+        await validateAll(data, rules, Antl.list('validator'))
+        .then( async () => {
+
+            try {
+                
+                const playlist = await Playlist.findOrFail(data.id)
+
+                if(playlist.user_id !== auth.user.id) return response.unauthorized({
+                    message: Antl.formatMessage('playlists.ownerFiled')
+                })
+    
+                const isTrackExist =  await Database.from('playlist_track').where({ 'playlist_id': playlist.id, 'track_id': data.track_id })
+                if(isTrackExist && isTrackExist.length !== 0){
+                    return response.conflict({
+                        message: Antl.formatMessage('playlists.isAlreadyAdded')
+                    })
+                }
+                
+                await playlist.tracks().attach(data.track_id)
+                response.created()
+
+            } catch (error) {
+                console.log(error)
+                response.internalServerError()
+            }
+
+        })
+        .catch( dataError => {
+            console.log("Validator", dataError);
+            response.unprocessableEntity(dataError)
         })
 
     }

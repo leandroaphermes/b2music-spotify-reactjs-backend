@@ -23,7 +23,6 @@ class PlaylistTrackSchema extends Schema {
         .notNullable()
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
-      table.timestamps()
     })
   }
 

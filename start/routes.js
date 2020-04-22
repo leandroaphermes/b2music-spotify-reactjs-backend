@@ -44,6 +44,7 @@ Route.group( () => {
     Route.get('/playlists', 'PlaylistController.index')
     Route.post('/playlists', 'PlaylistController.store')
     Route.get('/playlists/:id', 'PlaylistController.show')
+    Route.post('/playlists/:id/track/:track_id', 'PlaylistController.storeTrack')
 
 }).middleware('auth').formats(['json'])
 
