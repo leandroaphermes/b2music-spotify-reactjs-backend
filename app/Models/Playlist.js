@@ -6,7 +6,7 @@ const Model = use('Model')
 class Playlist extends Model {
 
     tracks(){
-        return this.belongsToMany('App/Models/Track').pivotTable('playlist_track')
+        return this.belongsToMany('App/Models/Track').pivotModel('App/Models/PlaylistTrack')
     }
 
     owner(){

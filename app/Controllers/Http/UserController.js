@@ -24,9 +24,21 @@ class UserController {
 		await validateAll(data, rules, Antl.list('validator'))
 		.then( async () => {
 			try {
-				const { type, token, refreshToken } = await auth.attempt(data.email, data.password)
-				response.ok({type, token, refreshToken})
+				const user = await User.findByOrFail('email', data.email)
+				const authRes = await auth.attempt(data.email, data.password, true)
+
+				const result = {
+					token: authRes.token,
+					refreshToken: authRes.refreshToken,
+					email: user.email,
+					username: user.username,
+					truename: user.truename
+				}
+
+				response.ok(result)
 			} catch (error) {
+				console.log(error);
+				
 				response.unauthorized({
 					message: Antl.formatMessage('authentication.incorrectEmailOrPassword')
 				})

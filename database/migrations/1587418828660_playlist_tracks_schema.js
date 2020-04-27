@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class PlaylistTrackSchema extends Schema {
   up () {
-    this.create('playlist_track', (table) => {
+    this.create('playlist_tracks', (table) => {
       table.increments()
       table
         .integer('playlist_id')
@@ -23,11 +23,12 @@ class PlaylistTrackSchema extends Schema {
         .notNullable()
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
+      table.timestamps()
     })
   }
 
   down () {
-    this.drop('playlist_track')
+    this.drop('playlist_tracks')
   }
 }
 
