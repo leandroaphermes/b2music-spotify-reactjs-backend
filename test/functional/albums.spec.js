@@ -31,7 +31,7 @@ test('Listando Albums', async ({ assert, client }) => {
   response.assertStatus(200)
   assert.isArray(response.body)
   assert.isNotEmpty(response.body)
-})
+}).timeout(6000)
 
 test('Criando um Album na tabela de Album', async ({ client }) => {
 
@@ -67,7 +67,7 @@ test('Criando um Album na tabela de Album', async ({ client }) => {
     genre_id,
     author_id
   })
-})
+}).timeout(6000)
 
 test('Pegando Album via ID', async ({ assert, client }) => {
 
@@ -89,4 +89,4 @@ test('Pegando Album via ID', async ({ assert, client }) => {
   assert.exists(response.body.id, 'Not exist\'s id')
   assert.exists(response.body.name, 'Not exist\'s name')
 
-})
+}).timeout(6000)

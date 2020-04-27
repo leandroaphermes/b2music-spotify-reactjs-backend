@@ -45,6 +45,7 @@ Route.group( () => {
     Route.post('/playlists', 'PlaylistController.store')
     Route.get('/playlists/:id', 'PlaylistController.show')
     Route.post('/playlists/:id/track/:track_id', 'PlaylistController.storeTrack')
+    Route.delete('/playlists/:id/track/:track_id', 'PlaylistController.destroyTrack')
 
 }).middleware('auth').formats(['json'])
 

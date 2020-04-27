@@ -69,7 +69,7 @@ test('Pegando uma Playlist via ID', async ({ assert, client }) => {
 
 }).timeout(6000)
 
-test('Adicionando Tracks em uma Playlist', async ({ assert, client }) => {
+test('Adicionando Track em uma Playlist', async ({ assert, client }) => {
 
   const user = await getUser()
 
@@ -88,13 +88,44 @@ test('Adicionando Tracks em uma Playlist', async ({ assert, client }) => {
 
   const playlist = await Factory.model('App/Models/Playlist').create({
     user_id: user.id
-  })  
-/*   await playlist.tracks().attach(track.id) */
+  })
 
   const response = await client.post(`/playlists/${playlist.id}/track/${track.id}`)
     .loginVia(user, 'jwt')
     .end()
 
   response.assertStatus(201)
+  assert.notExists(response.body.message)
+
+}).timeout(6000)
+
+test('Removendo Track em uma Playlist', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
+  const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
+  const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
+    genre_id: factoryGenre_id,
+    author_id: factoryAuthor_id,
+    categories: 'single'
+  })
+
+  const track = await Factory.model('App/Models/Track').create({
+    album_id: factoryAlbum_id
+  })
+  await track.authors().attach([ factoryAuthor_id ])
+
+  const playlist = await Factory.model('App/Models/Playlist').create({
+    user_id: user.id
+  })
+  await playlist.tracks().attach(track.id)
+
+  const response = await client.delete(`/playlists/${playlist.id}/track/${track.id}`)
+    .loginVia(user, 'jwt')
+    .end()
+
+  response.assertStatus(204)
+  assert.notExists(response.body.message)
 
 }).timeout(6000)

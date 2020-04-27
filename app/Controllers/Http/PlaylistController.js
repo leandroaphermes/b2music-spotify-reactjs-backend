@@ -12,13 +12,11 @@ const Antl = use('Antl')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Playlist = use('App/Models/Playlist');
 
-const Database = use('Database')
-
 class PlaylistController {
 
     async index(){
-        const data = await Playlist.query().with('owner', (bilder) => {
-            bilder.select([ 'id', 'truename', ])
+        const data = await Playlist.query().with('owner', (builder) => {
+            builder.select([ 'id', 'truename', ])
         }).fetch()
         return data
     }
@@ -77,9 +75,17 @@ class PlaylistController {
         .then( async () => {
             try {
 
-                const dataRes = await Playlist.query().where({ id: data.id }).with('owner', (bilder) => {
-                    bilder.select([ 'id', 'truename' ])
-                }).with('tracks').first()
+                const dataRes = await Playlist.query()
+                    .where({ id: data.id })
+                    .with('owner', (builder) => {
+                        builder.select([ 'id', 'truename' ])
+                    })
+                    .with('tracks', (builder) => {
+                        builder.with('authors', builder => {
+                            builder.select(['id', 'name'])
+                        })
+                    })
+                    .first()
                 
                 if(dataRes === null){
                    return response.notFound()
@@ -87,6 +93,8 @@ class PlaylistController {
                 response.ok(dataRes)
 
             } catch (error) {
+                console.log(error);
+                
                 response.internalServerError()
             }
         })
@@ -117,10 +125,10 @@ class PlaylistController {
                     message: Antl.formatMessage('playlists.ownerFiled')
                 })
     
-                const isTrackExist =  await Database.from('playlist_track').where({ 'playlist_id': playlist.id, 'track_id': data.track_id })
-                if(isTrackExist && isTrackExist.length !== 0){
+                const isTrackExist = await playlist.tracks().where('track_id', data.track_id).fetch()
+                if(isTrackExist.rows.length !== 0){
                     return response.conflict({
-                        message: Antl.formatMessage('playlists.isAlreadyAdded')
+                        message: Antl.formatMessage('playlists.isAlreadyAddedTrack')
                     })
                 }
                 
@@ -135,6 +143,47 @@ class PlaylistController {
         })
         .catch( dataError => {
             console.log("Validator", dataError);
+            response.unprocessableEntity(dataError)
+        })
+
+    }
+
+    async destroyTrack({ request, auth, response}){
+
+        const data = request.params
+
+        const rules = {
+            id: "required|number",
+            track_id: "required|number"
+        }
+
+        await validateAll(data, rules, Antl.list('validation'))
+        .then( async () => {
+            try {
+                
+                const playlist = await Playlist.findOrFail(data.id)
+
+                if(playlist.user_id !== auth.user.id) return response.unauthorized({
+                    message: Antl.formatMessage('playlists.ownerFiled')
+                })
+                
+                const isTrackExist = await playlist.tracks().where('track_id', data.track_id).fetch()
+                if(isTrackExist.rows.length !== 1){
+                    return response.conflict({
+                        message: Antl.formatMessage('playlists.isAlreadyRemovedTrack')
+                    })
+                }
+                
+                await playlist.tracks().detach(data.track_id)
+                response.noContent()
+
+            } catch (error) {
+                console.log(error)
+                response.internalServerError()
+            }
+        })
+        .catch( dataError => {
+            console.log("Validator Error", dataError);
             response.unprocessableEntity(dataError)
         })
 
