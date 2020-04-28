@@ -9,7 +9,6 @@ class CardSchema extends Schema {
       table.increments()
       table.string('title', 100).notNullable()
       table.text('description', 'TINYTEXT')
-      table.timestamps()
     })
   }
 

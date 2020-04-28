@@ -58,7 +58,7 @@ class TrackController {
                     name: "trim"
                 })
 
-                ({ authors, ...rest_data } = data)
+               const { authors, ...rest_data } = data
 
                if(track_file){
                     

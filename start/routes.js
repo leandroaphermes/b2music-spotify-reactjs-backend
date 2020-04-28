@@ -30,6 +30,10 @@ Route.group( () => {
     Route.post('/authors', 'AuthorController.store')
     Route.get('/authors/:id', 'AuthorController.show')
     
+
+    Route.get('/genres', 'GenreController.index')
+    Route.post('/genres', 'GenreController.store')
+    
     
     Route.get('/albums', 'AlbumController.index')
     Route.post('/albums', 'AlbumController.store')

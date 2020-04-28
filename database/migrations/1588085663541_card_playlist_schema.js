@@ -3,31 +3,31 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class AuthorTrackSchema extends Schema {
+class CardPlaylistSchema extends Schema {
   up () {
-    this.create('author_track', (table) => {
+    this.create('card_playlists', (table) => {
       table
-        .integer('author_id')
+        .integer('card_id')
         .unsigned()
-        .references('id')
-        .inTable('authors')
         .notNullable()
+        .references('id')
+        .inTable('cards')
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
       table
-        .integer('track_id')
+        .integer('playlist_id')
         .unsigned()
-        .references('id')
-        .inTable('tracks')
         .notNullable()
+        .references('id')
+        .inTable('playlists')
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
     })
   }
 
   down () {
-    this.drop('author_track')
+    this.drop('card_playlists')
   }
 }
 
-module.exports = AuthorTrackSchema
+module.exports = CardUserPlaylistSchema

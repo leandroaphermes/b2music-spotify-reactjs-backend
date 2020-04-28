@@ -58,16 +58,12 @@ class AlbumController {
                 
                 sanitize(data, sintatization)
 
-                ({ genres, ...rest_data } = data)
-
-                console.log("LOG DE LOG", data, genres, rest_data);
-                
+                const { genres, ...rest_data } = data
 
                 const dataRes = await Album.create(rest_data)
                 dataRes.genres().attach(genres)
 
                 response.created(dataRes)
-                return data
 
             } catch (error) {
                 console.log(error);

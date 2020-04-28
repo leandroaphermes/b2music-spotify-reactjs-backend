@@ -16,11 +16,9 @@ async function getUser(){
 
 test('Listando Albums', async ({ assert, client }) => {
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   
   await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id
   })
   
@@ -33,27 +31,26 @@ test('Listando Albums', async ({ assert, client }) => {
   assert.isNotEmpty(response.body)
 }).timeout(6000)
 
-test('Criando um Album na tabela de Album', async ({ client }) => {
+test('Criando um Album na tabela de Album', async ({ assert, client }) => {
 
   const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   
   const { 
     author_id, 
-    genre_id,
     name,
     categories,
     releasedt,
     photo_url
    } = await Factory.model('App/Models/Album').make({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id
   })
+
   
   const response = await client.post('/albums')
     .send({ 
       author_id, 
-      genre_id,
+      genres: [ factoryGenre_id ],
       name,
       categories,
       releasedt,
@@ -63,19 +60,16 @@ test('Criando um Album na tabela de Album', async ({ client }) => {
     .end()
 
   response.assertStatus(201)
-  response.assertJSONSubset({
-    genre_id,
-    author_id
-  })
+  assert.isObject(response.body)
+  assert.exists(response.body.id, 'Not exist\'s id')
+  assert.exists(response.body.name, 'Not exist\'s name')
 }).timeout(6000)
 
 test('Pegando Album via ID', async ({ assert, client }) => {
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   
   const { id } = await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id
   })
 

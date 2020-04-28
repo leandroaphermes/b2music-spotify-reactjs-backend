@@ -73,10 +73,8 @@ test('Adicionando Track em uma Playlist', async ({ assert, client }) => {
 
   const user = await getUser()
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id,
     categories: 'single'
   })
@@ -103,10 +101,8 @@ test('Removendo Track em uma Playlist', async ({ assert, client }) => {
 
   const user = await getUser()
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id,
     categories: 'single'
   })

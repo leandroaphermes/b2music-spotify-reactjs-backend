@@ -15,10 +15,8 @@ async function getUser(){
 
 test('Listando todas as Tracks', async ({ assert, client }) => {
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id,
     categories: 'single'
   })
@@ -39,21 +37,25 @@ test('Listando todas as Tracks', async ({ assert, client }) => {
 
 test('Criando uma Track na tabela track', async ({ assert, client }) => {
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id,
     categories: 'single'
   })
 
-  const { name, album_id, authors_id, src, duration, playcount } = await Factory.model('App/Models/Track').make({
+  const { name, album_id, src, duration, playcount } = await Factory.model('App/Models/Track').make({
     album_id: factoryAlbum_id,
-    authors_id: [ factoryAuthor_id ]
   })
 
   const response = await client.post('/tracks')
-    .send({ name, album_id, authors_id, src, duration, playcount })
+    .send({ 
+      name, 
+      album_id, 
+      authors: [ factoryAuthor_id ], 
+      src, 
+      duration, 
+      playcount
+    })
     .loginVia( await getUser() , 'jwt')
     .end()
 
@@ -67,10 +69,8 @@ test('Criando uma Track na tabela track', async ({ assert, client }) => {
 
 test('Pegando uma Track via ID', async ({ assert, client }) => {
 
-  const { id: factoryGenre_id } = await Factory.model('App/Models/Genre').create()
   const { id: factoryAuthor_id } = await Factory.model('App/Models/Author').create()
   const { id: factoryAlbum_id } = await Factory.model('App/Models/Album').create({
-    genre_id: factoryGenre_id,
     author_id: factoryAuthor_id,
     categories: 'single'
   })
