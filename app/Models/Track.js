@@ -15,6 +15,10 @@ class Track extends Model {
         return `${Env.get('APP_URL')}/tracks/file/${src}`
     }
 
+    album(){
+        return this.belongsTo('App/Models/Album')
+    }
+
 }
 
 module.exports = Track

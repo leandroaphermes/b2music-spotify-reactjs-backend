@@ -8,7 +8,7 @@ class AuthorsSchema extends Schema {
     this.create('authors', (table) => {
       table.increments()
       table.string('name', 100).notNullable()
-      table.string('photo_url')
+      table.string('photo_url', 255)
       table.text('bio')
       table.string('site')
       table.string('wikipedia')

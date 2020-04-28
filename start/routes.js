@@ -18,6 +18,7 @@ const Route = use('Route')
 
 Route.post('/auth', 'UserController.auth')
 Route.post('/register', 'UserController.store')
+Route.get('tracks/file/:file', 'TrackController.file')
 
 Route.group( () => {
 
@@ -37,7 +38,6 @@ Route.group( () => {
     
     Route.get('/tracks', 'TrackController.index')
     Route.post('/tracks', 'TrackController.store')
-    Route.get('tracks/file/:file', 'TrackController.file')
     Route.get('/tracks/:id', 'TrackController.show')
     
     
@@ -48,6 +48,8 @@ Route.group( () => {
     Route.delete('/playlists/:id/track/:track_id', 'PlaylistController.destroyTrack')
 
 }).middleware('auth').formats(['json'])
+
+
 
 
 

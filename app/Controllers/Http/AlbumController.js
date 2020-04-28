@@ -21,7 +21,7 @@ class AlbumController {
 
         const data = request.only([
             "author_id",
-            "genre_id",
+            "genres",
             "name",
             "categories",
             "releasedt",
@@ -30,7 +30,7 @@ class AlbumController {
 
         const rules = {
             author_id: "required|number",
-            genre_id: "required|number",
+            genres: "required|array",
             name: [
                 validations.required(),
                 validations.min([ 3 ]),
@@ -54,13 +54,25 @@ class AlbumController {
 
         await validateAll(data, rules, Antl.list('validation'))
         .then( async () => {
+            try {
+                
+                sanitize(data, sintatization)
 
-			sanitize(data, sintatization)
+                ({ genres, ...rest_data } = data)
 
-            const dataRes = await Album.create(data)
-            response.created(dataRes)
-            return data
+                console.log("LOG DE LOG", data, genres, rest_data);
+                
 
+                const dataRes = await Album.create(rest_data)
+                dataRes.genres().attach(genres)
+
+                response.created(dataRes)
+                return data
+
+            } catch (error) {
+                console.log(error);
+                
+            }
         })
         .catch( dataError => {
             console.log("Validator Error:", dataError, data.name)

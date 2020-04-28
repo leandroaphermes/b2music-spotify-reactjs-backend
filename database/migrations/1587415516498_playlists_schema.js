@@ -16,6 +16,7 @@ class PlaylistsSchema extends Schema {
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
       table.string('name', 100).notNullable()
+      table.string('photo_url', 255)
       table.text('description', 'TINYTEXT')
       table.integer('playcount').unsigned().defaultTo(0)
       table.timestamps()

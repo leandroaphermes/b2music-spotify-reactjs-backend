@@ -16,7 +16,7 @@ class PlaylistController {
 
     async index(){
         const data = await Playlist.query().with('owner', (builder) => {
-            builder.select([ 'id', 'truename', ])
+            builder.select([ 'id', 'truename' ])
         }).fetch()
         return data
     }
@@ -24,7 +24,7 @@ class PlaylistController {
     async store({ request, auth, response }){
 
         let data = request.only([ 
-            "name", "description"
+            "name", "description", "photo_url"
         ])
 
         const rules = {
@@ -83,6 +83,9 @@ class PlaylistController {
                     .with('tracks', (builder) => {
                         builder.with('authors', builder => {
                             builder.select(['id', 'name'])
+                        })
+                        .with('album', (builder) => {
+                            builder.select([ 'id', 'name', 'photo_url' ])
                         })
                     })
                     .first()

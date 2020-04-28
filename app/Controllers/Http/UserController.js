@@ -39,7 +39,7 @@ class UserController {
 			} catch (error) {
 				console.log(error);
 				
-				response.unauthorized({
+				response.status(400).send({
 					message: Antl.formatMessage('authentication.incorrectEmailOrPassword')
 				})
 			}

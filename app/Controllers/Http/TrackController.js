@@ -26,7 +26,7 @@ class TrackController {
     async store({ request, response }){
 
         let data = request.only([
-            "name", "album_id", "authors_id", "duration"
+            "name", "album_id", "authors", "duration"
         ])
         
         const track_file = request.file("track_file", {
@@ -45,8 +45,8 @@ class TrackController {
                 validations.regex( [new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g )] )
             ],
             album_id: "required|number",
-            authors_id: "required|array",
-            'authors_id.*.author_id': "required|integer",
+            authors: "required|array",
+            'authors.*.author_id': "required|integer",
             duration: "required|number"
         }
 
@@ -58,15 +58,14 @@ class TrackController {
                     name: "trim"
                 })
 
-                let authors = data.authors_id
-                delete data.authors_id
+                ({ authors, ...rest_data } = data)
 
                if(track_file){
                     
-                    data.src = `track-${new Date().getTime()}.mp3`
+                    rest_data.src = `track-${new Date().getTime()}.mp3`
 
                     await track_file.move(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/tracks`), {
-                        name: data.src,
+                        name: rest_data.src,
                         overwrite: true
                     })
                     if (!track_file.moved()) {
@@ -74,7 +73,7 @@ class TrackController {
                     }
                }
 
-                const dataRes = await Track.create(data)
+                const dataRes = await Track.create(rest_data)
                 await dataRes.authors().attach( authors )
 
                 response.created(dataRes)
