@@ -31,6 +31,7 @@ class CardController {
 
         const rules = {
             type: "required|string|in:latest,all,genre",
+            genre_id: 'required_when:type,genre|number',
             title: "required|string|min:4|max:100",
             description: "required|string|min:4|max:255"
         }

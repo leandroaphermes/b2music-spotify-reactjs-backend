@@ -82,6 +82,8 @@ Factory.blueprint('App/Models/Playlist', (faker, i , data = { }) => {
 
 Factory.blueprint('App/Models/Card', (faker, i, data) =>{
     return {
+        type: faker.pickone(['latest', 'all', 'genre']),
+        genre_id: null,
         title: faker.name(),
         description: faker.paragraph({ sentences: 1 }),
         ...data
