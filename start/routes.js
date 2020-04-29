@@ -22,34 +22,44 @@ Route.get('tracks/file/:file', 'TrackController.file')
 
 Route.group( () => {
 
-    Route.get('/users', 'UserController.index')
-    Route.get('/users/:id', 'UserController.show')
-    
-
-    Route.get('/authors', 'AuthorController.index')
-    Route.post('/authors', 'AuthorController.store')
-    Route.get('/authors/:id', 'AuthorController.show')
-    
-
-    Route.get('/genres', 'GenreController.index')
-    Route.post('/genres', 'GenreController.store')
-    
     
     Route.get('/albums', 'AlbumController.index')
     Route.post('/albums', 'AlbumController.store')
     Route.get('/albums/:id', 'AlbumController.show')
-    
-    
-    Route.get('/tracks', 'TrackController.index')
-    Route.post('/tracks', 'TrackController.store')
-    Route.get('/tracks/:id', 'TrackController.show')
-    
+
+
+    Route.get('/authors', 'AuthorController.index')
+    Route.post('/authors', 'AuthorController.store')
+    Route.get('/authors/:id', 'AuthorController.show')
+
+
+    Route.get('/cards', 'CardController.index')
+    Route.post('/cards', 'CardController.store')
+    Route.get('/cards/home-page', 'CardController.homePage')
+    Route.post('/cards/:id/playlist/:playlist_id', 'CardController.storePlaylist')
+
+
+    Route.get('/genres', 'GenreController.index')
+    Route.post('/genres', 'GenreController.store')
+
     
     Route.get('/playlists', 'PlaylistController.index')
     Route.post('/playlists', 'PlaylistController.store')
     Route.get('/playlists/:id', 'PlaylistController.show')
     Route.post('/playlists/:id/track/:track_id', 'PlaylistController.storeTrack')
     Route.delete('/playlists/:id/track/:track_id', 'PlaylistController.destroyTrack')
+
+
+    Route.get('/tracks', 'TrackController.index')
+    Route.post('/tracks', 'TrackController.store')
+    Route.get('/tracks/:id', 'TrackController.show')
+
+    
+    Route.get('/users', 'UserController.index')
+    Route.get('/users/:id', 'UserController.show')
+    
+    
+    
 
 }).middleware('auth').formats(['json'])
 

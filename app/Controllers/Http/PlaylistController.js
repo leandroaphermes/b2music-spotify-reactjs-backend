@@ -10,7 +10,10 @@ const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Playlist = use('App/Models/Playlist');
+const Playlist = use('App/Models/Playlist')
+
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const Track = use('App/Models/Track')
 
 class PlaylistController {
 
@@ -124,19 +127,22 @@ class PlaylistController {
                 
                 const playlist = await Playlist.findOrFail(data.id)
 
+                
                 if(playlist.user_id !== auth.user.id) return response.unauthorized({
                     message: Antl.formatMessage('playlists.ownerFiled')
                 })
-    
-                const isTrackExist = await playlist.tracks().where('track_id', data.track_id).fetch()
+                
+                const track = await Track.findOrFail(data.track_id)
+
+                const isTrackExist = await playlist.tracks().where('track_id', track.id).fetch()
                 if(isTrackExist.rows.length !== 0){
                     return response.conflict({
                         message: Antl.formatMessage('playlists.isAlreadyAddedTrack')
                     })
                 }
                 
-                await playlist.tracks().attach(data.track_id)
-                response.created()
+                await playlist.tracks().attach(track.id)
+                response.noContent()
 
             } catch (error) {
                 console.log(error)

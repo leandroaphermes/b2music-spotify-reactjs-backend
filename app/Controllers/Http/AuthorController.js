@@ -8,7 +8,7 @@ const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Author = use('App/Models/Author');
+const Author = use('App/Models/Author')
 
 class AuthorController {
 

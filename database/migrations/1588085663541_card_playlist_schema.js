@@ -5,7 +5,7 @@ const Schema = use('Schema')
 
 class CardPlaylistSchema extends Schema {
   up () {
-    this.create('card_playlists', (table) => {
+    this.create('card_playlist', (table) => {
       table
         .integer('card_id')
         .unsigned()
@@ -26,8 +26,8 @@ class CardPlaylistSchema extends Schema {
   }
 
   down () {
-    this.drop('card_playlists')
+    this.drop('card_playlist')
   }
 }
 
-module.exports = CardUserPlaylistSchema
+module.exports = CardPlaylistSchema

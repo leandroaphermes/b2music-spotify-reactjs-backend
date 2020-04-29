@@ -92,7 +92,7 @@ test('Adicionando Track em uma Playlist', async ({ assert, client }) => {
     .loginVia(user, 'jwt')
     .end()
 
-  response.assertStatus(201)
+  response.assertStatus(204)
   assert.notExists(response.body.message)
 
 }).timeout(6000)

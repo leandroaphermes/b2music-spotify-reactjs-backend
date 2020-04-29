@@ -8,7 +8,7 @@ const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Genre = use('App/Models/Genre');
+const Genre = use('App/Models/Genre')
 
 
 class GenreController {
@@ -48,7 +48,7 @@ class GenreController {
                 response.created(dataRes)
 
             } catch (error) {
-                
+                response.internalServerError()
             }
 
         })

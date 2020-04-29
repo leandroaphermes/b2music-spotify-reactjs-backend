@@ -3,9 +3,9 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class PlaylistHistorysSchema extends Schema {
+class PlaylistHistoriesSchema extends Schema {
   up () {
-    this.create('playlist_historys', (table) => {
+    this.create('playlist_histories', (table) => {
       table.increments()
       table
         .integer('playlist_id')
@@ -23,14 +23,14 @@ class PlaylistHistorysSchema extends Schema {
         .inTable('users')
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
-      
+      table.string('action')
       table.timestamps()
     })
   }
 
   down () {
-    this.drop('playlist_historys')
+    this.drop('playlist_histories')
   }
 }
 
-module.exports = PlaylistHistorysSchema
+module.exports = PlaylistHistoriesSchema

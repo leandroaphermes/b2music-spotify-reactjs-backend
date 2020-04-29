@@ -11,7 +11,7 @@ const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Track = use('App/Models/Track');
+const Track = use('App/Models/Track')
 
 
 

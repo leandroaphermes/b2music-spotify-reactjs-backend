@@ -7,6 +7,13 @@ class CardSchema extends Schema {
   up () {
     this.create('cards', (table) => {
       table.increments()
+      table.enu('type', [ 'latest', 'all', 'genre' ]).notNullable()
+      table
+        .integer('genre_id')
+        .nullable()
+        .unsigned()
+        .references('id')
+        .inTable('genres')
       table.string('title', 100).notNullable()
       table.text('description', 'TINYTEXT')
     })

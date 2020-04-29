@@ -7,7 +7,7 @@ class GenresSchema extends Schema {
   up () {
     this.create('genres', (table) => {
       table.increments()
-      table.string('name', 50)
+      table.string('name', 50).unique()
       table.text('description', 'TINYTEXT')
       table.timestamps()
     })

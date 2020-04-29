@@ -79,3 +79,11 @@ Factory.blueprint('App/Models/Playlist', (faker, i , data = { }) => {
         ...data
     }
 })
+
+Factory.blueprint('App/Models/Card', (faker, i, data) =>{
+    return {
+        title: faker.name(),
+        description: faker.paragraph({ sentences: 1 }),
+        ...data
+    }
+})

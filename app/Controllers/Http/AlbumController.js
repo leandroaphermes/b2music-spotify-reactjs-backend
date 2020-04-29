@@ -8,7 +8,7 @@ const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Album = use('App/Models/Album');
+const Album = use('App/Models/Album')
 
 class AlbumController {
 
