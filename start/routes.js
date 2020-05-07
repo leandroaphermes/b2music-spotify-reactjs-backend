@@ -57,12 +57,16 @@ Route.group( () => {
     
     Route.get('/users', 'UserController.index')
     Route.get('/users/:id', 'UserController.show')
-    
-    
-    
+
 
 }).middleware('auth').formats(['json'])
 
+Route.group( () => {
+
+    Route.get('/countrys', 'Utils/Global/CountryController.index')
+    Route.get('/countrys/:country_code', 'Utils/Global/CountryController.show')
+
+}).prefix('/utils/global')
 
 
 

@@ -75,20 +75,15 @@ class UserController {
 			email: "required|email|min:6|max:64",
 			password: "required|confirmed|min:4|max:32",
 			truename: "required|min:4|max:100",
-			phone: "required|min:14|max:20",
+			phone: "required|min:7|max:20",
 			gender: "required|alpha|in:F,M",
 			birth: [
 			  validations.required(),
 			  validations.dateFormat(['YYYY-MM-DD']),
 			  validations.date()
 			],
-			country: [
-				validations.required(),
-				validations.min([3]),
-				validations.max([50]),
-				validations.regex(["[a-zA-Z\s]+"])
-			],
-			province: "required|alpha|min:2|max:5"
+			country: "required|alpha|min:2|max:2",
+			province: "required|alpha|min:2|max:2"
 		}
 		const sintatization = {
 			username: "trim|lower_case",
@@ -96,8 +91,8 @@ class UserController {
 			truename: "trim|lower_case",
 			phone: "trim|lower_case",
 			gender: "trim|upper_case",
-			country: "trim|lower_case",
-			province: "trim|lower_case"
+			country: "trim|upper_case",
+			province: "trim|upper_case"
 		}
 
 		await validateAll(data, rules, Antl.list('validation'))
