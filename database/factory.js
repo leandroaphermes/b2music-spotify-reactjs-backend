@@ -23,7 +23,7 @@ Factory.blueprint('App/Models/User', (faker, i, data = { }) => {
         phone: faker.phone(),
         gender: faker.string({ pool: 'MF', length: 1 }),
         birth: '2020-12-30',
-        country: faker.country({ full: true }),
+        country: faker.country(),
         province: faker.province(),
         ...data
     }
@@ -80,10 +80,11 @@ Factory.blueprint('App/Models/Playlist', (faker, i , data = { }) => {
     }
 })
 
-Factory.blueprint('App/Models/Card', (faker, i, data) =>{
+Factory.blueprint('App/Models/Card', (faker, i, data) => {
+    const type = faker.pickone(['latest', 'all', 'genre'])
     return {
-        type: faker.pickone(['latest', 'all', 'genre']),
-        genre_id: null,
+        type,
+        genre_id: (type == 'genre') ? 1 : null,
         title: faker.name(),
         description: faker.paragraph({ sentences: 1 }),
         ...data

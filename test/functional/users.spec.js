@@ -94,3 +94,33 @@ test('Pegando o Usuario via ID', async ({ assert, client }) => {
   assert.exists(response.body.truename, 'Not exist\'s truename')
 })
  
+test('Pegando dados do usuario autenticado', async({ assert, client }) => {
+
+  const user = await getUser()
+
+  const response = await client.get('/users/current-auth')
+    .loginVia(user, 'jwt')
+    .end()
+
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.email)
+})
+
+test('Atualizando dados de usuario autenticado', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const update = {
+    truename: "Leandro Hermes",
+    username: "leandro5654"
+  }
+
+  const response = await client.put(`/users/${user.id}`)
+    .send(update)
+    .loginVia(user, 'jwt')
+    .end()
+
+  response.assertStatus(200)
+
+})

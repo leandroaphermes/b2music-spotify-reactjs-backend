@@ -56,7 +56,9 @@ Route.group( () => {
 
     
     Route.get('/users', 'UserController.index')
+    Route.get('/users/current-auth', 'UserController.showAuth')
     Route.get('/users/:id', 'UserController.show')
+    Route.put('/users/:id', 'UserController.update')
 
 
 }).middleware('auth').formats(['json'])

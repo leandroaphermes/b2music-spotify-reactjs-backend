@@ -30,10 +30,10 @@ test('Listando todos os Cards', async ({ assert, client }) => {
 
 test('Criando um Card da tabela Cards', async ({ assert, client }) => {
 
-  const { title, description } = await Factory.model('App/Models/Card').make()
+  const { type, genre_id, title, description } = await Factory.model('App/Models/Card').make()
 
   const response = await client.post('/cards')
-    .send({ title, description })
+    .send({ type, genre_id, title, description })
     .loginVia(await getUser(), 'jwt')
     .end()
 
