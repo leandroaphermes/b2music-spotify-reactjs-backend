@@ -30,6 +30,7 @@ class UserController {
 				const result = {
 					token: authRes.token,
 					refreshToken: authRes.refreshToken,
+					id: user.id,
 					email: user.email,
 					username: user.username,
 					truename: user.truename
@@ -198,7 +199,7 @@ class UserController {
 
 				const user = await User.findOrFail(data.id)
 
-				if(user.id !== auth.id) {
+				if(user.id !== auth.user.id) {
 					return response.forbidden({
 						message: Antl.formatMessage('authentication.userBadPerssionSave')
 					})
@@ -207,13 +208,11 @@ class UserController {
 				sanitize(data, sintatization)
 
 				user.merge(data)
-				const dataRes = await user.save()
+				await user.save()
 
-				response.ok(dataRes)
+				response.ok(user)
 
 			} catch (error) {
-				console.log(error);
-				
 				response.internalServerError()
 			}
 
