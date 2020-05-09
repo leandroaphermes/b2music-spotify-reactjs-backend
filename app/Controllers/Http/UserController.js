@@ -170,17 +170,18 @@ class UserController {
 		
 		const rules = {
 			id: "required|number",
-			username: "alpha_numeric|min:4|max:32",
-			email: "email|min:6|max:64",
-			truename: "min:4|max:100",
-			phone: "min:7|max:20",
-			gender: "alpha|in:F,M",
+			username: "required|alpha_numeric|min:4|max:32",
+			email: "required|email|min:6|max:64",
+			truename: "required|min:4|max:100",
+			phone: "required|min:7|max:20",
+			gender: "required|alpha|in:F,M",
 			birth: [
+			  validations.required(),
 			  validations.dateFormat(['YYYY-MM-DD']),
 			  validations.date()
 			],
-			country: "alpha|min:2|max:3",
-			province: "alpha|min:2|max:3"
+			country: "required|alpha|min:2|max:3",
+			province: "required|alpha|min:2|max:3"
 		}
 		const sintatization = {
 			username: "trim|lower_case",
