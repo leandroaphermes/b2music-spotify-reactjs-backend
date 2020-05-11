@@ -219,6 +219,7 @@ class UserController {
 
 		})
 		.catch(dataError => {
+			console.log("Error Validate", dataError)
 			response.unprocessableEntity(dataError)
 		})
 

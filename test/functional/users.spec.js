@@ -113,7 +113,13 @@ test('Atualizando dados de usuario autenticado', async ({ assert, client }) => {
 
   const update = {
     truename: "Leandro Hermes",
-    username: "leandro5654"
+    username: "leandro5654",
+    phone: user.phone,
+    province: user.province,
+    country: user.country,
+    birth: "2000-01-01",
+    gender: user.gender,
+    email: user.email
   }
 
   const response = await client.put(`/users/${user.id}`)
@@ -122,5 +128,8 @@ test('Atualizando dados de usuario autenticado', async ({ assert, client }) => {
     .end()
 
   response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.id)
+  assert.exists(response.body.email)
 
 })
