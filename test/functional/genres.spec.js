@@ -28,10 +28,10 @@ test('Listando os Generos', async ({ assert, client }) => {
 
 test('Criando um Genero na tabela Genres', async ({ assert, client }) => {
 
-  const { name, description } = await Factory.model('App/Models/Genre').make()
+  const { name, description, url, color } = await Factory.model('App/Models/Genre').make()
 
   const response = await client.post('/genres')
-    .send({ name, description })
+    .send({ name, description, url, color })
     .loginVia( await getUser(), 'jwt' )
     .end()
 

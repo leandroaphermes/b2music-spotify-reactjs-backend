@@ -19,7 +19,7 @@ Factory.blueprint('App/Models/User', (faker, i, data = { }) => {
         username: faker.username(),
         email: faker.email(),
         truename: faker.name(),
-        password: '123123',
+        password: '@senha123',
         phone: faker.phone(),
         gender: faker.string({ pool: 'MF', length: 1 }),
         birth: '2020-12-30',
@@ -57,6 +57,8 @@ Factory.blueprint('App/Models/Genre', (faker, i , data = { }) => {
     return {
         name: faker.name(),
         description: faker.paragraph({ sentences: 1 }),
+        url: faker.url({protocol: 'https' }),
+        color: "F1215f",
         ...data
     }
 })

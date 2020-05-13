@@ -50,6 +50,9 @@ Route.group( () => {
     Route.delete('/playlists/:id/track/:track_id', 'PlaylistController.destroyTrack')
 
 
+    Route.get('/search/:search', 'SearchController.show')
+
+
     Route.get('/tracks', 'TrackController.index')
     Route.post('/tracks', 'TrackController.store')
     Route.get('/tracks/:id', 'TrackController.show')

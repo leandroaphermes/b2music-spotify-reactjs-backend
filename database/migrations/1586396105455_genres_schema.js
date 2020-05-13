@@ -9,6 +9,8 @@ class GenresSchema extends Schema {
       table.increments()
       table.string('name', 50).unique()
       table.text('description', 'TINYTEXT')
+      table.string('url', 50).unique().notNullable()
+      table.string('color', 8).defaultTo('ffebcd')
       table.timestamps()
     })
   }

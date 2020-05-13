@@ -22,7 +22,7 @@ class GenreController {
 
     async store({ request, response }){
 
-        const data = request.only([ "name", "description" ])
+        const data = request.only([ "name", "description", "url", "color" ])
         const rules = {
             name: [
                 validations.required(),
@@ -31,7 +31,9 @@ class GenreController {
                 validations.max([50]),
                 validations.regex( new RegExp(/^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g))
             ],
-            description: "required|string|min:4|max:255"
+            description: "required|string|min:4|max:255",
+            url: "required|string|min:3|max:50",
+            color: "required|string|min:3|max:8"
         }
 
         await validateAll(data, rules, Antl.list('validation'))
@@ -42,6 +44,8 @@ class GenreController {
                 sanitize(data, {
                     name: "trim",
                     description: "trim",
+                    url: "trim|lower_case",
+                    color: "trim"
                 })
 
                 const dataRes = await Genre.create(data)
@@ -53,7 +57,7 @@ class GenreController {
 
         })
         .catch( dataError => {
-            console.log("Validator", dataError);
+            console.log("Validator", dataError)
             response.unprocessableEntity(dataError)
         })
 
