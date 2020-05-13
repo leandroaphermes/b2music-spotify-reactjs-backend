@@ -8,8 +8,8 @@ const Factory = use('Factory');
 trait('Test/ApiClient')
 trait('Auth/Client')
 
-async function getUser(){
-  const user = await Factory.model('App/Models/User').create()
+async function getUser(data = {}){
+  const user = await Factory.model('App/Models/User').create(data)
   return user
 }
 
@@ -131,5 +131,24 @@ test('Atualizando dados de usuario autenticado', async ({ assert, client }) => {
   assert.isObject(response.body)
   assert.exists(response.body.id)
   assert.exists(response.body.email)
+
+})
+
+test('Alterando senha de usuario autenticado', async ({ client }) => {
+
+  const user = await getUser({
+    password: "@123123"
+  })
+
+  const response = await client.put(`/users/${user.id}/password`)
+    .send({
+      password_old: "@123123",
+      password_new: "@123123",
+      password_new_confirmation: "@123123"
+    })
+    .loginVia( user, 'jwt')
+    .end()
+
+  response.assertStatus(204)
 
 })

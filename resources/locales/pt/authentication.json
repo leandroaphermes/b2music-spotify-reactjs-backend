@@ -1,5 +1,4 @@
 {
     "incorrectEmailOrPassword": "Email ou senha incorretos",
-    "badRequest": "Não foi possivel fazer este requisição",
-    "userBadPerssionSave": "Erro ao salvar. Você não tem permição de editar outro usuario"
+    "badRequest": "Não foi possivel fazer este requisição"
 }

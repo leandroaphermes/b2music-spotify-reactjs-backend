@@ -8,6 +8,8 @@ const Antl = use('Antl')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User')
 
+const Hash = use('Hash')
+
 class UserController {
 
 	async auth ({ request, auth, response }){
@@ -202,7 +204,7 @@ class UserController {
 
 				if(user.id !== auth.user.id) {
 					return response.forbidden({
-						message: Antl.formatMessage('authentication.userBadPerssionSave')
+						message: Antl.formatMessage('users.userBadPerssionSave')
 					})
 				}
 
@@ -220,6 +222,72 @@ class UserController {
 		})
 		.catch(dataError => {
 			console.log("Error Validate", dataError)
+			response.unprocessableEntity(dataError)
+		})
+
+	}
+
+	async updatePassword( { request, auth, response }){
+
+		const data = request.only([ 
+			"password_old",
+			"password_new",
+			"password_new_confirmation",
+		])
+		data.id = request.params.id
+
+		const rules = {
+			id: "required|number",
+			password_old: [
+				validations.required(),
+				validations.min([6]),
+				validations.max([32]),
+				validations.regex([/[a-zA-Z0-9!@#$%&\-_.]/])
+			],
+			password_new: [
+				validations.required(),
+				validations.min([6]),
+				validations.max([32]),
+				validations.regex([/[a-zA-Z0-9!@#$%&\-_.]/]),
+				validations.confirmed()
+			]
+		}
+
+		await validateAll(data, rules, Antl.list("validation"))
+		.then( async () => {
+			
+			try {
+
+				if(data.id !== auth.user.id){
+					return response.forbidden({
+						message: Antl.formatMessage("users.userBadPerssionSave")
+					})
+				}
+	
+				const user = await User.findOrFail(data.id)
+	
+				const validedPassOld = await Hash.verify(data.password_old, user.password )
+	
+				if(!validedPassOld){
+					return response.forbidden({
+						message: Antl.formatMessage("users.passwordOldValidFailed")
+					})
+				}
+	
+				user.merge({
+					password: data.password_new
+				})
+				user.save()
+
+				
+			} catch (error) {
+                console.log(error)
+				response.internalServerError()
+			}
+
+		})
+		.catch( dataError => {
+			console.log("Validation: ", dataError)
 			response.unprocessableEntity(dataError)
 		})
 
