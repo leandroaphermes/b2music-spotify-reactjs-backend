@@ -79,7 +79,7 @@ class UserController {
 			password: "required|confirmed|min:4|max:32",
 			truename: "required|min:4|max:100",
 			phone: "required|min:7|max:20",
-			gender: "required|alpha|in:F,M",
+			gender: "required|alpha|in:F,M,O",
 			birth: [
 			  validations.required(),
 			  validations.dateFormat(['YYYY-MM-DD']),

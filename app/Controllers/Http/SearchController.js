@@ -46,8 +46,7 @@ class SearchController {
                     })
                     .where("name", "LIKE", `%${data.search}%`)
                     .orderBy('playcount', 'desc')
-                    .limit(6)
-                    .fetch()
+                    .paginate(1, 5)
 
                 const playlists = await Playlist.query()
                     .with('owner', (builder) => {
@@ -55,15 +54,13 @@ class SearchController {
                     })
                     .where("name", "LIKE", `%${data.search}%`)
                     .orderBy('playcount', 'desc')
-                    .limit(6)
-                    .fetch()
+                    .paginate(1, 5)
 
                 const authors = await Author.query()
                     .select([ "id", "name", "photo_url" ])
                     .where("name", "LIKE", `%${data.search}%`)
                     .orderBy('name', 'asc')
-                    .limit(6)
-                    .fetch()
+                    .paginate(1, 5)
 
                 const albums = await Album.query()
                     .with('author', (builder) => {
@@ -71,15 +68,13 @@ class SearchController {
                     })
                     .where("name", "LIKE", `%${data.search}%`)
                     .orderBy('name', 'asc')
-                    .limit(6)
-                    .fetch()
+                    .paginate(1, 5)
 
                 const users = await User.query()
                     .select([ "id", "truename" ])
                     .where("truename", "LIKE", `%${data.search}%`)
-                    .orderBy('name', 'asc')
-                    .limit(6)
-                    .fetch()
+                    .orderBy('truename', 'asc')
+                    .paginate(1, 5)
 
                 result.tracks = tracks
                 result.playlists = playlists
