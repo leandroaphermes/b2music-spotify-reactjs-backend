@@ -23,10 +23,20 @@ test('Procurando tudo', async ({ assert, client }) => {
   
   response.assertStatus(200)
   assert.isObject(response.body)
-  assert.isArray(response.body.tracks)
-  assert.isArray(response.body.playlists)
-  assert.isArray(response.body.authors)
-  assert.isArray(response.body.albums)
-  assert.isArray(response.body.users)
+  
+  assert.isObject(response.body.tracks)
+  assert.isArray(response.body.tracks.data)
+
+  assert.isObject(response.body.playlists)
+  assert.isArray(response.body.playlists.data)
+
+  assert.isObject(response.body.authors)
+  assert.isArray(response.body.authors.data)
+
+  assert.isObject(response.body.albums)
+  assert.isArray(response.body.albums.data)
+
+  assert.isObject(response.body.users)
+  assert.isArray(response.body.users.data)
 
 })

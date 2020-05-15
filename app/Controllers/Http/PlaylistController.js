@@ -111,6 +111,24 @@ class PlaylistController {
 
     }
 
+    async playlistsAuth({ auth, response }){
+
+		try {
+/* 
+            const playlists = await Playlist.query()
+                .where({ user_id: auth.user.id })
+                .orderBy('')
+                .fetch()
+ */
+			
+		} catch (error) {
+			response.internalServerError()
+		}
+
+
+	}
+
+
     async storeTrack({ request, auth, response }){
 
         const data = request.params
@@ -197,6 +215,7 @@ class PlaylistController {
         })
 
     }
+
     
 }
 

@@ -35,12 +35,18 @@ Route.group( () => {
 
     Route.get('/cards', 'CardController.index')
     Route.post('/cards', 'CardController.store')
-    Route.get('/cards/home-page', 'CardController.homePage')
     Route.post('/cards/:id/playlist/:playlist_id', 'CardController.storePlaylist')
 
 
     Route.get('/genres', 'GenreController.index')
     Route.post('/genres', 'GenreController.store')
+
+
+    Route.get('/me', 'UserController.showAuth')
+    Route.put('/me', 'UserController.updateAuth')
+    Route.put('/me/password', 'UserController.updatePasswordAuth')
+    Route.get('/me/home-page', 'CardController.homePage')
+    Route.get('/me/playlists', 'PlaylistController.playlistsAuth')
 
     
     Route.get('/playlists', 'PlaylistController.index')
@@ -59,9 +65,7 @@ Route.group( () => {
 
     
     Route.get('/users', 'UserController.index')
-    Route.get('/users/current-auth', 'UserController.showAuth')
     Route.get('/users/:id', 'UserController.show')
-    Route.put('/users/:id/password', 'UserController.updatePassword')
     Route.put('/users/:id', 'UserController.update')
 
 

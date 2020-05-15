@@ -1,12 +1,16 @@
 'use strict'
 
-const { validateAll, validations } = use('indicative/validator')
+const { validateAll, validations, extend } = use('indicative/validator')
+const { getValue, skippable } = use('indicative-utils')
 const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
-
+/* 
+const uniqueValidation = require("../../Validations/Extends/unique") */
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User')
+
+const Database = use('Database')
 
 const Hash = use('Hash')
 
@@ -59,6 +63,39 @@ class UserController {
 	}
 
 	async store ({ request, response }){
+
+		extend('unique', {
+			async: true,
+			
+			compile (args) {
+				if (args.length !== 2) {
+					throw new Error('Unique rule needs the table and column name') 
+				}		
+				return args 
+			},
+			
+			async validate (data, field, args, config) {
+			
+				const fieldValue = getValue(data, field)
+
+				if (skippable(fieldValue, field, config)) {
+					return true
+				}
+
+				const user = await Database
+					.table(args[0])
+					.where(args[1], fieldValue)
+					.first()
+
+				if (user) {
+					return false
+				}
+				
+				return true
+			}
+
+		})
+
 		let data = request.only([
 			"username",
 			"email",
@@ -74,7 +111,7 @@ class UserController {
 
 
 		const rules = {
-			username: "required|alpha_numeric|min:4|max:32",
+			username: "required|alpha_numeric|min:4|max:32|unique:users,username",
 			email: "required|email|min:6|max:64",
 			password: "required|confirmed|min:4|max:32",
 			truename: "required|min:4|max:100",
@@ -172,7 +209,6 @@ class UserController {
 		
 		const rules = {
 			id: "required|number",
-			username: "required|alpha_numeric|min:4|max:32",
 			email: "required|email|min:6|max:64",
 			truename: "required|min:4|max:100",
 			phone: "required|min:7|max:20",
@@ -227,17 +263,74 @@ class UserController {
 
 	}
 
-	async updatePassword( { request, auth, response }){
+	async updateAuth({ request, auth, response }){
+
+		const data = request.only([
+			"email",
+			"truename",
+			"phone",
+			"gender",
+			"birth",
+			"country",
+			"province"
+		])
+				
+		const rules = {
+			email: "required|email|min:6|max:64",
+			truename: "required|min:4|max:100",
+			phone: "required|min:7|max:20",
+			gender: "required|alpha|in:F,M",
+			birth: [
+			  validations.required(),
+			  validations.dateFormat(['YYYY-MM-DD']),
+			  validations.date()
+			],
+			country: "required|alpha|min:2|max:3",
+			province: "required|alpha|min:2|max:3"
+		}
+		const sintatization = {
+			email: "trim|lower_case|normalize_email",
+			truename: "trim|lower_case",
+			phone: "trim|lower_case",
+			gender: "trim|upper_case",
+			country: "trim|upper_case",
+			province: "trim|upper_case"
+		}
+
+		await validateAll(data, rules, Antl.list('validation'))
+		.then( async () => {
+
+			try {
+
+				const user = await User.findOrFail(auth.user.id)
+
+				sanitize(data, sintatization)
+
+				user.merge(data)
+				await user.save()
+
+				response.ok(user)
+
+			} catch (error) {
+				response.internalServerError()
+			}
+
+		})
+		.catch(dataError => {
+			console.log("Error Validate", dataError)
+			response.unprocessableEntity(dataError)
+		})
+
+	}
+
+	async updatePasswordAuth( { request, auth, response }){
 
 		const data = request.only([ 
 			"password_old",
 			"password_new",
 			"password_new_confirmation",
 		])
-		data.id = request.params.id
-
 		const rules = {
-			id: "required|number",
 			password_old: [
 				validations.required(),
 				validations.min([6]),
@@ -258,13 +351,7 @@ class UserController {
 			
 			try {
 
-				if(data.id !== auth.user.id){
-					return response.forbidden({
-						message: Antl.formatMessage("users.userBadPerssionSave")
-					})
-				}
-	
-				const user = await User.findOrFail(data.id)
+				const user = await User.findOrFail(auth.user.id)
 	
 				const validedPassOld = await Hash.verify(data.password_old, user.password )
 	
@@ -292,6 +379,8 @@ class UserController {
 		})
 
 	}
+
+	
 }
 
 module.exports = UserController

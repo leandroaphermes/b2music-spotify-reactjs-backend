@@ -44,21 +44,6 @@ test('Criando um Card da tabela Cards', async ({ assert, client }) => {
 
 })
 
-test('Listando Cards para Home Page', async ({ assert, client }) => {
-
-  await Factory.model('App/Models/Card').create()
-
-  const response = await client.get('/cards/home-page')
-    .loginVia( await getUser(), "jwt")
-    .end()
-
-  response.assertStatus(200)
-
-  assert.isArray(response.body)
-  assert.isNotEmpty(response.body)
-
-})
-
 test('Adicionando Playlist nos Cards', async ({ assert, client }) => {
 
   const user = await getUser()
