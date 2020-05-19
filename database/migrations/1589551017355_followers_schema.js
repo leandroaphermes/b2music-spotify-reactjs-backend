@@ -3,9 +3,10 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class AlbumAuthorPlaylistUsersSchema extends Schema {
+class FollowersSchema extends Schema {
   up () {
-    this.create('album_author_playlist_users', (table) => {
+    this.create('followers', (table) => {
+      table.increments()
       table
         .integer('album_id')
         .nullable()
@@ -49,8 +50,8 @@ class AlbumAuthorPlaylistUsersSchema extends Schema {
   }
 
   down () {
-    this.drop('album_author_playlist_users')
+    this.drop('followers')
   }
 }
 
-module.exports = AlbumAuthorPlaylistUsersSchema
+module.exports = FollowersSchema

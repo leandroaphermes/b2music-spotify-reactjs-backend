@@ -15,6 +15,9 @@ const Playlist = use('App/Models/Playlist')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Track = use('App/Models/Track')
 
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const Followers = use('App/Models/Followers')
+
 class PlaylistController {
 
     async index(){
@@ -43,7 +46,6 @@ class PlaylistController {
             ]
         }
 
-
         await validateAll(data, rules, Antl.list('validation'))
         .then( async () => {
             try {
@@ -54,6 +56,15 @@ class PlaylistController {
                 data.user_id = auth.user.id
 
                 const dataRes = await Playlist.create(data)
+
+                await Followers.create({
+                    album_id: null,
+                    author_id: null,
+                    playlist_id: dataRes.id,
+                    user_id: dataRes.user_id,
+                    type: 'playlist'
+                })
+
                 response.created(dataRes)
             } catch (error) {
                 response.internalServerError()
@@ -110,24 +121,6 @@ class PlaylistController {
         })
 
     }
-
-    async playlistsAuth({ auth, response }){
-
-		try {
-/* 
-            const playlists = await Playlist.query()
-                .where({ user_id: auth.user.id })
-                .orderBy('')
-                .fetch()
- */
-			
-		} catch (error) {
-			response.internalServerError()
-		}
-
-
-	}
-
 
     async storeTrack({ request, auth, response }){
 

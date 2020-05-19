@@ -1,7 +1,7 @@
 'use strict'
 
 /** @type {typeof import('indicative/src/Validator')} */
-const { validateAll, validations } = use('indicative/validator')
+const { validateAll, validations, extend } = use('indicative/validator')
 
 /** @type {typeof import('indicative/src/Sanitizer')} */
 const { sanitize } = use('indicative/sanitizer')
@@ -9,6 +9,8 @@ const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Genre = use('App/Models/Genre')
+
+const uniqueValidation = use("App/Validations/Extends/unique.js")
 
 
 class GenreController {
@@ -22,17 +24,25 @@ class GenreController {
 
     async store({ request, response }){
 
-        const data = request.only([ "name", "description", "url", "color" ])
+        extend('unique', uniqueValidation)
+
+        const data = request.only([ 
+            "name", 
+            "description", 
+            "url", 
+            "color"
+        ])
         const rules = {
             name: [
                 validations.required(),
                 validations.string(),
                 validations.min([3]),
                 validations.max([50]),
+                validations.unique([ 'genres', 'name' ]),
                 validations.regex( new RegExp(/^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g))
             ],
             description: "required|string|min:4|max:255",
-            url: "required|string|min:3|max:50",
+            url: "required|string|min:3|max:50|unique:genres,url",
             color: "required|string|min:3|max:8"
         }
 

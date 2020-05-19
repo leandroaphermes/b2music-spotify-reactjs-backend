@@ -12,6 +12,7 @@ class Playlist extends Model {
     owner(){
         return this.belongsTo('App/Models/User')
     }
+    
 
 }
 

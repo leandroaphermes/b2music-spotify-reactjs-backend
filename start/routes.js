@@ -42,11 +42,11 @@ Route.group( () => {
     Route.post('/genres', 'GenreController.store')
 
 
-    Route.get('/me', 'UserController.showAuth')
-    Route.put('/me', 'UserController.updateAuth')
-    Route.put('/me/password', 'UserController.updatePasswordAuth')
+    Route.get('/me', 'MeController.show')
+    Route.put('/me', 'MeController.update')
+    Route.put('/me/password', 'MeController.updatePassword')
     Route.get('/me/home-page', 'CardController.homePage')
-    Route.get('/me/playlists', 'PlaylistController.playlistsAuth')
+    Route.get('/me/playlists', 'MeController.showFollowersPlaylists')
 
     
     Route.get('/playlists', 'PlaylistController.index')

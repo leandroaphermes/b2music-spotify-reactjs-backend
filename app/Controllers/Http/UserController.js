@@ -1,16 +1,14 @@
 'use strict'
 
 const { validateAll, validations, extend } = use('indicative/validator')
-const { getValue, skippable } = use('indicative-utils')
 const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
-/* 
-const uniqueValidation = require("../../Validations/Extends/unique") */
+
+const uniqueValidation = use("App/Validations/Extends/unique.js")
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User')
 
-const Database = use('Database')
 
 const Hash = use('Hash')
 
@@ -31,7 +29,7 @@ class UserController {
 		.then( async () => {
 			try {
 				const user = await User.findByOrFail('email', data.email)
-				const authRes = await auth.attempt(data.email, data.password, true)
+				const authRes = await auth.attempt(data.email, data.password, false)
 
 				const result = {
 					token: authRes.token,
@@ -64,37 +62,7 @@ class UserController {
 
 	async store ({ request, response }){
 
-		extend('unique', {
-			async: true,
-			
-			compile (args) {
-				if (args.length !== 2) {
-					throw new Error('Unique rule needs the table and column name') 
-				}		
-				return args 
-			},
-			
-			async validate (data, field, args, config) {
-			
-				const fieldValue = getValue(data, field)
-
-				if (skippable(fieldValue, field, config)) {
-					return true
-				}
-
-				const user = await Database
-					.table(args[0])
-					.where(args[1], fieldValue)
-					.first()
-
-				if (user) {
-					return false
-				}
-				
-				return true
-			}
-
-		})
+		extend('unique', uniqueValidation)
 
 		let data = request.only([
 			"username",
@@ -109,10 +77,9 @@ class UserController {
 			"province"
 		])
 
-
 		const rules = {
 			username: "required|alpha_numeric|min:4|max:32|unique:users,username",
-			email: "required|email|min:6|max:64",
+			email: "required|email|min:6|max:64|unique:users,email",
 			password: "required|confirmed|min:4|max:32",
 			truename: "required|min:4|max:100",
 			phone: "required|min:7|max:20",
@@ -194,6 +161,8 @@ class UserController {
 
 	async update({ request, auth, response }){
 
+		extend('unique', uniqueValidation)
+		
 		const data = request.only([
 			"username",
 			"email",
@@ -209,7 +178,7 @@ class UserController {
 		
 		const rules = {
 			id: "required|number",
-			email: "required|email|min:6|max:64",
+			email: "required|email|min:6|max:64|unique:users,email",
 			truename: "required|min:4|max:100",
 			phone: "required|min:7|max:20",
 			gender: "required|alpha|in:F,M",

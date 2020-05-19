@@ -13,8 +13,6 @@ const Antl = use('Antl')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Track = use('App/Models/Track')
 
-
-
 class TrackController {
 
     async index(){
@@ -35,7 +33,7 @@ class TrackController {
             extnames: [ 'mp3' ]
         })
         
-
+        
         const rules = {
             name: [
                 validations.required(),

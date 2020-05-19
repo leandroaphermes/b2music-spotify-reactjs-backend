@@ -13,9 +13,6 @@ const Card = use('App/Models/Card')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Playlist = use('App/Models/Playlist')
 
-/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const PlaylistHistory = use('App/Models/PlaylistHistory')
-
 class CardController {
 
     async index(){
