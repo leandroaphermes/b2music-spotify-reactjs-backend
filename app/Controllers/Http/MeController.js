@@ -10,6 +10,12 @@ const User = use('App/Models/User')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Followers = use('App/Models/Followers')
 
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const Card = use('App/Models/Card')
+
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const PlaylistHistory = use('App/Models/PlaylistHistory')
+
 
 const Hash = use('Hash')
 
@@ -159,6 +165,25 @@ class MeController {
 
   }
 	
+	async homePage({ auth, response }){
+		try {
+			const dataRes = {
+
+				cards: await Card.query().with('playlists', (builder) =>{
+					builder.select([ "id", "name", "description", "photo_url" ])
+				} ).fetch(),
+
+				playlist_histories: await PlaylistHistory.query().where({ user_id: auth.user.id }).with('playlists', (builder) => {
+					builder.select([ "id", "name", "description", "photo_url" ])
+				} ).orderBy("updated_at", "desc").fetch()
+
+			}
+			return dataRes
+		} catch (error) {
+			console.log(error)
+			response.internalServerError()
+		}
+	}
 }
 
 module.exports = MeController

@@ -51,19 +51,6 @@ class CardController {
 
     }
 
-    async homePage({ auth, response }){
-        try {
-            
-            const dataRes = await Card.query().with('playlists', (builder) =>{
-                builder.select([ "id", "name", "description", "photo_url" ])
-            } ).fetch()
-            return dataRes
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     async storePlaylist({ params, response }){
 
         const data = params

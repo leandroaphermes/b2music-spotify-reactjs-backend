@@ -25,7 +25,8 @@ test('Listando Cards para Home Page do usuario autenticado', async ({ assert, cl
   response.assertStatus(200)
 
   assert.isArray(response.body)
-  assert.isNotEmpty(response.body)
+  assert.isNotEmpty(response.body.cards)
+  assert.isArray(response.body.playlist_histories)
 
 })
 
@@ -87,7 +88,7 @@ test('Alterando senha de usuario autenticado', async ({ client }) => {
 
 })
 
-test('Listando todas as Playlists do usuario autenticado', async ({ assert, client }) => {
+test('Listando todas as Playlists que o usuario autenticado esta seguindo', async ({ assert, client }) => {
 
   const user = await getUser()
 
