@@ -115,7 +115,7 @@ class TrackController {
 
     file({ params, response}){
 
-        return response.download(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/tracks/${params.file}`))
+        return response.download(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/tracks/${params.file}`))}
 
     }
 

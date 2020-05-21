@@ -18,7 +18,8 @@ const Route = use('Route')
 
 Route.post('/auth', 'UserController.auth')
 Route.post('/register', 'UserController.store')
-Route.get('tracks/file/:file', 'TrackController.file')
+Route.get('/tracks/file/:file', 'TrackController.file')
+Route.get('/playlists/file/image/:file', 'PlaylistController.fileImage')
 
 Route.group( () => {
 

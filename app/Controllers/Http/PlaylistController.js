@@ -6,7 +6,6 @@ const { validateAll, validations } = use('indicative/validator')
 /** @type {typeof import('indicative/src/Sanitizer')} */
 const { sanitize } = use('indicative/sanitizer')
 
-/** @type {typeof import('indicative/src/Sanitizer')} */
 const Antl = use('Antl')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
@@ -17,6 +16,11 @@ const Track = use('App/Models/Track')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Followers = use('App/Models/Followers')
+
+const uuidv4 = require("uuid/v4");
+const Env = use('Env')
+const Helpers = use('Helpers')
+const { UPLOAD_IMG, UPLOAD_IMG_EXTNAMES, UPLOAD_IMG_SIZE } = require('../../../config/upload.js')
 
 class PlaylistController {
 
@@ -30,19 +34,19 @@ class PlaylistController {
     async store({ request, auth, response }){
 
         let data = request.only([ 
-            "name", "description", "photo_url"
+            "name", "description"
         ])
 
         const rules = {
             name: [
                 validations.required(),
                 validations.min([3]),
-                validations.max([100]),
-                validations.regex([ new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g ) ])
+                validations.max([100])
             ],
             description: [
-                validations.required(),
-                validations.max([255])
+                validations.string(),
+                validations.min([0]),
+                validations.max([255]),
             ]
         }
 
@@ -52,8 +56,37 @@ class PlaylistController {
                 sanitize(data, {
                     name: "trim"
                 })
+
+                const photo = request.file("photo", {
+                    types: UPLOAD_IMG,
+                    extnames: UPLOAD_IMG_EXTNAMES,
+                    size: UPLOAD_IMG_SIZE
+                })
+
+                let filename = ""
                 
+                if(photo){
+                    filename = `${new Date().getTime()}-${uuidv4()}.${photo.subtype}`
+                
+                    await photo.move( Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/images/playlists`), {
+                        name: filename,
+                        overwrite: true
+                    })
+    
+                    if (!photo.moved()) {
+                        const erro = photo.error()
+                        return response.unprocessableEntity({
+                            message: erro.message,
+                            type: erro.type,
+                            field: erro.fieldName
+                        })
+                    }
+                }
+
                 data.user_id = auth.user.id
+                data.photo_url = filename
+
+                
 
                 const dataRes = await Playlist.create(data)
 
@@ -67,6 +100,7 @@ class PlaylistController {
 
                 response.created(dataRes)
             } catch (error) {
+                console.log(error);
                 response.internalServerError()
             }
         })
@@ -209,7 +243,15 @@ class PlaylistController {
 
     }
 
-    
+    fileImage({ params, response}){
+
+        if(params.file === ""){
+            return ""
+        }
+
+        return response.download(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/images/playlists/${params.file}`))
+
+    }
 }
 
 module.exports = PlaylistController
