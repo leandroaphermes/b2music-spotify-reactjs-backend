@@ -1,6 +1,6 @@
 'use strict'
 
-const { validateAll, validations, extend } = use('indicative/validator')
+const { validateAll, validations } = use('indicative/validator')
 const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
@@ -18,6 +18,7 @@ const PlaylistHistory = use('App/Models/PlaylistHistory')
 
 
 const Hash = use('Hash')
+const moment = use('moment')
 
 class MeController {
 
@@ -148,9 +149,63 @@ class MeController {
 
 	}
 
+	async homePage({ auth, response }){
+		try {
+			const dataRes = {
+
+				cards: await Card.query().with('playlists', (builder) =>{
+					builder.select([ "id", "name", "description", "photo_url" ])
+				} ).fetch(),
+
+				playlist_histories: await PlaylistHistory.query().where({ user_id: auth.user.id }).with('playlist', (builder) => {
+					builder.select([ "id", "name", "description", "photo_url" ])
+				} ).orderBy("updated_at", "desc").limit(10).fetch()
+
+			}
+			return dataRes
+		} catch (error) {
+			console.log(error)
+			response.internalServerError()
+		}
+	}
+
+	async actionTracer({ request, auth, response }){
+
+		const data = request.only([ "action_type", "action_click", "action_trigger", "payload" ])
+
+		switch (data.action_type) {
+			case "set-new-playlist":
+
+				const dataRes = await PlaylistHistory.query()
+					.where({ 
+						playlist_id: data.payload.playlist_id, 
+						user_id: auth.user.id 
+					})
+					.first()
+
+				if(dataRes && dataRes.id){
+					dataRes.updated_at = moment().format('DD-MM-YYYY HH:mm:ss')
+					await dataRes.save()
+				}else{
+					await PlaylistHistory.create({
+						playlist_id: data.payload.playlist_id,
+						user_id: auth.user.id,
+						action: data.action_click
+					})
+				}
+				break;
+		
+			default:
+				break;
+		}
+
+		response.noContent()
+
+	}
+
   async showFollowersPlaylists({ auth, response }) {
 
-    const datRes = await Followers.query()
+    const dataRes = await Followers.query()
       .where({ 
         user_id: auth.user.id,
         type: 'playlist',
@@ -161,29 +216,28 @@ class MeController {
       .orderBy('created_at', 'desc')
       .fetch()
 
-    response.ok(datRes)
+    response.ok(dataRes)
 
-  }
-	
-	async homePage({ auth, response }){
-		try {
-			const dataRes = {
-
-				cards: await Card.query().with('playlists', (builder) =>{
-					builder.select([ "id", "name", "description", "photo_url" ])
-				} ).fetch(),
-
-				playlist_histories: await PlaylistHistory.query().where({ user_id: auth.user.id }).with('playlists', (builder) => {
-					builder.select([ "id", "name", "description", "photo_url" ])
-				} ).orderBy("updated_at", "desc").fetch()
-
-			}
-			return dataRes
-		} catch (error) {
-			console.log(error)
-			response.internalServerError()
-		}
 	}
+	
+	async showFollowersAuthors({ auth, response }){
+
+		const dataRes = await Followers.query()
+			.where({
+				type: "author",
+				user_id: auth.user.id
+			})
+			.with('author', (builder) => {
+				builder.select([
+					"id", "name", "photo_url"
+				])
+			})
+			.fetch()
+
+			response.ok(dataRes)
+
+	}
+
 }
 
 module.exports = MeController

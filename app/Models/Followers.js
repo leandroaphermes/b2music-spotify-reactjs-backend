@@ -9,6 +9,10 @@ class Followers extends Model {
     return this.belongsTo('App/Models/Playlist')
   }
 
+  author(){
+    return this.belongsTo('App/Models/Author')
+  }
+
 }
 
 module.exports = Followers

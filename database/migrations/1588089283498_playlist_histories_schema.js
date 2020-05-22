@@ -23,7 +23,7 @@ class PlaylistHistoriesSchema extends Schema {
         .inTable('users')
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
-      table.string('action')
+      table.string('action', 30)
       table.timestamps()
     })
   }
