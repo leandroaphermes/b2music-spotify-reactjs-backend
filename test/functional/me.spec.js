@@ -24,7 +24,7 @@ test('Listando Cards para Home Page do usuario autenticado', async ({ assert, cl
 
   response.assertStatus(200)
 
-  assert.isArray(response.body)
+  assert.isObject(response.body)
   assert.isNotEmpty(response.body.cards)
   assert.isArray(response.body.playlist_histories)
 
