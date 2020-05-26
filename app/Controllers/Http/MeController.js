@@ -153,13 +153,25 @@ class MeController {
 		try {
 			const dataRes = {
 
-				cards: await Card.query().with('playlists', (builder) =>{
+				cards: await Card.query()
+				.with('playlists', (builder) =>{
 					builder.select([ "id", "name", "description", "photo_url" ])
 				} ).fetch(),
 
-				playlist_histories: await PlaylistHistory.query().where({ user_id: auth.user.id }).with('playlist', (builder) => {
+				playlist_histories: await PlaylistHistory.query()
+				.where({
+					user_id: auth.user.id
+				})
+				.select([
+					"id",
+					"playlist_id"
+				])
+				.with('playlist', (builder) => {
 					builder.select([ "id", "name", "description", "photo_url" ])
-				} ).orderBy("updated_at", "desc").limit(10).fetch()
+				})
+				.orderBy("updated_at", "desc")
+				.limit(10)
+				.fetch()
 
 			}
 			return dataRes
@@ -210,6 +222,11 @@ class MeController {
         user_id: auth.user.id,
         type: 'playlist',
        })
+			 .select([
+				 "id",
+				 "playlist_id",
+				 "type"
+			 ])
       .with('playlist', (builder) => {
         builder.select([ "id", "name", "description", "photo_url" ])
       })
@@ -227,6 +244,11 @@ class MeController {
 				type: "author",
 				user_id: auth.user.id
 			})
+			.select([
+				"id",
+				"author_id",
+				"type"
+			])
 			.with('author', (builder) => {
 				builder.select([
 					"id", "name", "photo_url"
@@ -236,6 +258,37 @@ class MeController {
 
 			response.ok(dataRes)
 
+	}
+
+	async showFollowersAlbums({ auth, response }) {
+
+		const dataRes = await Followers.query()
+			.where({
+				user_id: auth.user.id,
+				type: "album"
+			})
+			.select([
+				"id",
+				"album_id",
+				"type"
+			])
+			.with("album", (builder) => {
+				builder.select([
+					"id", 
+					"name", 
+					"photo_url", 
+					"author_id"
+				]).with("author", (builder) => {
+					builder.select([
+						"id", 
+						"name"
+					])
+				})
+			})
+			.orderBy("updated_at", "desc")
+			.fetch()
+
+		response.ok(dataRes)
 	}
 
 }

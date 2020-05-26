@@ -98,3 +98,25 @@ test('Listando todas as Playlists que o usuario autenticado esta seguindo', asyn
 
 
 })
+
+test('Listando todas as Autores que o usuario autenticado esta seguindo', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const response = await client.get('/me/authors')
+    .loginVia( user, 'jwt')
+    .end()
+
+
+})
+
+test('Listando todas as Albums que o usuario autenticado esta seguindo', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const response = await client.get('/me/albums')
+    .loginVia( user, 'jwt')
+    .end()
+
+
+})

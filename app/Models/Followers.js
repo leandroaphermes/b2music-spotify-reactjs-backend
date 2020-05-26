@@ -13,6 +13,10 @@ class Followers extends Model {
     return this.belongsTo('App/Models/Author')
   }
 
+  album(){
+    return this.belongsTo('App/Models/Album')
+  }
+
 }
 
 module.exports = Followers
