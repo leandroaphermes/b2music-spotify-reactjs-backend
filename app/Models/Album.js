@@ -13,6 +13,10 @@ class Album extends Model {
         return this.belongsToMany('App/Models/Genre').pivotTable('album_genre')
     }
 
+    tracks(){
+        return this.hasMany('App/Models/Track')
+    }
+
 }
 
 module.exports = Album
