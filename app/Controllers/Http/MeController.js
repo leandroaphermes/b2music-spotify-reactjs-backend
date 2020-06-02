@@ -291,6 +291,35 @@ class MeController {
 		response.ok(dataRes)
 	}
 
+	async showFollowersTracks({ auth, response }){
+
+		const dataRes = await Followers.query()
+			.select([
+				"id",
+				"tack_id",
+				"type",
+				"created_at"
+			])
+			.where({
+				user_id: auth.user.id,
+				type: "track"
+			})
+			.with('track', (builder) => {
+				builder
+				.with('album', (builder) => {
+					builder.select([ "id", "name" ])
+				})
+				.with('authors', (builder) => {
+					builder.select([ "id", "name" ])
+				})
+
+			})
+			.orderBy("created_at", "desc")
+			.fetch()
+		
+		response.ok(dataRes)
+	}
+
 }
 
 module.exports = MeController

@@ -35,6 +35,15 @@ class FollowersSchema extends Schema {
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
       table
+        .integer('track_id')
+        .nullable()
+        .unsigned()
+        .defaultTo(null)
+        .references('id')
+        .inTable('tracks')
+        .onUpdate('CASCADE')
+        .onDelete('CASCADE')
+      table
         .integer('user_id')
         .notNullable()
         .unsigned()
@@ -43,7 +52,7 @@ class FollowersSchema extends Schema {
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
 
-      table.enu('type', [ 'album', 'author', 'playlist' ])
+      table.enu('type', [ 'album', 'author', 'playlist', 'track' ])
 
       table.timestamps()
     })

@@ -126,7 +126,7 @@ class PlaylistController {
                 const dataRes = await Playlist.query()
                     .where({ id: data.id })
                     .with('owner', (builder) => {
-                        builder.select([ 'id', 'truename' ])
+                        builder.select([ 'id', 'truename', 'username' ])
                     })
                     .with('tracks', (builder) => {
                         builder.with('authors', builder => {

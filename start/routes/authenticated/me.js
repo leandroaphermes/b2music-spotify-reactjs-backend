@@ -12,6 +12,7 @@ Route.group( ()=> {
   Route.get('/me/playlists', 'MeController.showFollowersPlaylists')
   Route.get('/me/authors', 'MeController.showFollowersAuthors')
   Route.get('/me/albums', 'MeController.showFollowersAlbums')
+  Route.get('/me/favorites', 'MeController.showFollowersTracks')
 
 
   Route.post('/me/action-tracer', 'MeController.actionTracer')
