@@ -141,6 +141,15 @@ class PlaylistController {
                 if(dataRes === null){
                    return response.notFound()
                 }
+
+                const followersCount = await Followers.query()
+                    .where({
+                        playlist_id: dataRes.id
+                    })
+                    .count('* as total_followers')
+                
+                dataRes.total_followers = followersCount[0].total_followers
+
                 response.ok(dataRes)
 
             } catch (error) {
