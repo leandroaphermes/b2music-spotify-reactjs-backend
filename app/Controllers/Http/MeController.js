@@ -320,6 +320,187 @@ class MeController {
 		response.ok(dataRes)
 	}
 
+	async showFollow({ params, auth, response }){
+
+		const data = params
+
+		const rules = {
+			id: "required|number",
+			type: "required|string|in:playlist,album,author,track"
+		}
+
+		await validateAll(data, rules, Antl.list('validation'))
+		.then( async () => {
+
+			try {
+
+				const dataQuery = {
+					user_id: auth.user.id,
+					type: data.type
+				}
+				switch (data.type) {
+					case "playlist":
+						dataQuery.playlist_id = data.id
+						break;
+					case "album":
+						dataQuery.album_id = data.id
+						break;
+					case "author":
+						dataQuery.author_id = data.id
+						break;
+					case "track":
+						dataQuery.track_id = data.id
+						break;
+				
+					default:
+						new Error ("not found type")
+						break;
+				}
+				
+				const dataRes = await Followers.query()
+					.where(dataQuery)
+					.first()
+
+
+				if(dataRes){
+					return response.ok({
+						favorite: true
+					})
+				}else{
+					return response.ok({
+						favorite: false
+					})
+				}
+
+			} catch (error) {
+				response.internalServerError()
+			}
+
+		})
+		.catch( dataError => {
+			response.unprocessableEntity(dataError)
+		})
+
+
+	}
+
+	async createFollow({ params, auth, response }){
+
+		const data = params
+
+		const rules = {
+			id: "required|number",
+			type: "required|string|in:playlist,album,author,track"
+		}
+
+		await validateAll(data, rules, Antl.list("validation"))
+		.then( async () => {
+
+			try {
+
+				const dataQuery = {
+					album_id: null,
+					author_id: null,
+					playlist_id: null,
+					track_id: null,
+					user_id: auth.user.id,
+					type: data.type
+				}
+				const whereObj = {
+					user_id: auth.user.id,
+					type: data.type
+				}
+
+				switch (data.type) {
+					case "playlist":
+						dataQuery.playlist_id = data.id
+						whereObj.playlist_id = data.id
+						break;
+					case "album":
+						dataQuery.album_id = data.id
+						whereObj.album_id = data.id
+						break;
+					case "author":
+						dataQuery.author_id = data.id
+						whereObj.author_id = data.id
+						break;
+					case "track":
+						dataQuery.track_id = data.id
+						whereObj.track_id = data.id
+						break;
+				
+					default:
+						new Error ("not found type")
+						break;
+				}
+				
+				await Followers.findOrCreate( whereObj, dataQuery)
+
+
+			} catch (error) {
+				response.internalServerError()
+			}
+
+		})
+		.catch( dataError => {
+			response.unprocessableEntity(dataError)
+		})
+
+	}
+
+	async deleteFollow({ params, auth, response }){
+
+		const data = params
+
+		const rules = {
+			id: "required|number",
+			type: "required|string|in:playlist,album,author,track"
+		}
+
+		await validateAll(data, rules, Antl.list("validation"))
+		.then( async () => {
+
+			try {
+
+				const dataQuery = {
+					user_id: auth.user.id,
+					type: data.type
+				}
+
+				switch (data.type) {
+					case "playlist":
+						dataQuery.playlist_id = data.id
+						break;
+					case "album":
+						dataQuery.album_id = data.id
+						break;
+					case "author":
+						dataQuery.author_id = data.id
+						break;
+					case "track":
+						dataQuery.track_id = data.id
+						break;
+				
+					default:
+						new Error ("not found type")
+						break;
+				}
+				
+				const dataRes = await Followers.query().where(dataQuery).delete()
+
+
+
+			} catch (error) {
+				response.internalServerError()
+			}
+
+		})
+		.catch( dataError => {
+			response.unprocessableEntity(dataError)
+		})
+
+	}
+
 }
 
 module.exports = MeController

@@ -120,3 +120,19 @@ test('Listando todas as Albums que o usuario autenticado esta seguindo', async (
 
 
 })
+
+test('Varificando se a playlist ou album esta sendo seguido', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const id = 1
+
+  const response = await client.get(`/me/favorites/${id}/playlist`)
+    .loginVia( user, 'jwt')
+    .end()
+
+  response.assertStatus(200)
+  assert.exists(response.body.favorite)
+  assert.isBol
+
+})
