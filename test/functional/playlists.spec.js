@@ -48,7 +48,7 @@ test('Criando uma Playlist na tabela Playlists', async ({ assert, client }) => {
   assert.isNumber(response.body.id, 'Not exist\'s id')
   assert.exists(response.body.name, 'Not exist\'s name')
 
-}).timeout(6000)
+})
 
 test('Pegando uma Playlist via ID', async ({ assert, client }) => {
 
@@ -67,7 +67,7 @@ test('Pegando uma Playlist via ID', async ({ assert, client }) => {
   assert.isNumber(response.body.id)
   assert.exists(response.body.name)
 
-}).timeout(6000)
+})
 
 test('Adicionando Track em uma Playlist', async ({ assert, client }) => {
 
@@ -123,5 +123,32 @@ test('Removendo Track em uma Playlist', async ({ assert, client }) => {
 
   response.assertStatus(204)
   assert.notExists(response.body.message)
+
+}).timeout(6000)
+
+test('Editar Playlist via ID', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const playlist = await Factory.model("App/Models/Playlist").create({
+    user_id: user.id
+  })
+
+  const response = await client.put(`/playlists/${playlist.id}`)
+    .loginVia( user, "jwt")
+    .send({
+      name: "Sou um novo titulo para playlist",
+      description: "Só uma descrição"
+    })
+    .end()
+  
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.id)
+  assert.equal(response.body.id , playlist.id)
+  assert.exists(response.body.user_id)
+  assert.equal(response.body.user_id , playlist.user_id)
+  assert.exists(response.body.name)
+  assert.equal(response.body.name , "Sou um novo titulo para playlist")
 
 }).timeout(6000)

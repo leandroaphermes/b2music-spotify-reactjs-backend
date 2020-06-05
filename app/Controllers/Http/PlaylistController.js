@@ -165,6 +165,77 @@ class PlaylistController {
 
     }
 
+    async update({ request, auth, response }){
+
+        const data = request.only([ "name", "description" ])
+        data.id = request.params.id
+
+        const rules = {
+            id: "required|number",
+            name: "required|string|min:3|max:100",
+            description: "string|min:0|max:255"
+        }
+
+        await validateAll(data, rules, Antl.list("validation"))
+        .then( async ()=> {
+            try {
+
+
+                
+                const dataRes = await Playlist.findOrFail(data.id)
+
+                if(dataRes.user_id !== auth.user.id){
+					return response.forbidden({
+						message: Antl.formatMessage('playlists.ownerFiled')
+					})
+                }
+
+
+                const photo = request.file("photo", {
+                    types: UPLOAD_IMG,
+                    extnames: UPLOAD_IMG_EXTNAMES,
+                    size: UPLOAD_IMG_SIZE
+                })
+
+                let filename = ""
+                
+                if(photo){
+                    filename = `${new Date().getTime()}-${uuidv4()}.${photo.subtype}`
+                
+                    await photo.move( Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/images/playlists`), {
+                        name: filename,
+                        overwrite: true
+                    })
+    
+                    if (!photo.moved()) {
+                        const erro = photo.error()
+                        return response.unprocessableEntity({
+                            message: erro.message,
+                            type: erro.type,
+                            field: erro.fieldName
+                        })
+                    }
+                }
+
+                dataRes.merge({
+                    name: data.name,
+                    description: (data.description) ? data.description : "",
+                    photo_url: (filename) ? filename : dataRes.photo_url
+                })
+
+                await dataRes.save()
+
+                response.ok(dataRes)
+
+            } catch (error) {
+                response.internalServerError()
+            }
+        })
+        .catch( dataError => {
+            response.unprocessableEntity(dataError)
+        })
+    }
+
     async storeTrack({ request, auth, response }){
 
         const data = request.params
@@ -182,7 +253,7 @@ class PlaylistController {
                 const playlist = await Playlist.findOrFail(data.id)
 
                 
-                if(playlist.user_id !== auth.user.id) return response.unauthorized({
+                if(playlist.user_id !== auth.user.id) return response.forbidden({
                     message: Antl.formatMessage('playlists.ownerFiled')
                 })
                 
@@ -226,7 +297,7 @@ class PlaylistController {
                 
                 const playlist = await Playlist.findOrFail(data.id)
 
-                if(playlist.user_id !== auth.user.id) return response.unauthorized({
+                if(playlist.user_id !== auth.user.id) return response.forbidden({
                     message: Antl.formatMessage('playlists.ownerFiled')
                 })
                 

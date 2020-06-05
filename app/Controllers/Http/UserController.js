@@ -146,19 +146,6 @@ class UserController {
 
 	}
 
-	async showAuth({ auth, response }){
-
-		try {
-			
-			const dataRes = await User.findOrFail(auth.user.id)
-			delete dataRes.password
-			response.ok(dataRes)
-
-		} catch (error) {
-			response.badRequest(Antl.formatMessage('authentication.badRequest'))
-		}
-	}
-
 	async update({ request, auth, response }){
 
 		extend('unique', uniqueValidation)
@@ -232,65 +219,6 @@ class UserController {
 
 	}
 
-	async updateAuth({ request, auth, response }){
-
-		const data = request.only([
-			"email",
-			"truename",
-			"phone",
-			"gender",
-			"birth",
-			"country",
-			"province"
-		])
-				
-		const rules = {
-			email: "required|email|min:6|max:64",
-			truename: "required|min:4|max:100",
-			phone: "required|min:7|max:20",
-			gender: "required|alpha|in:F,M",
-			birth: [
-			  validations.required(),
-			  validations.dateFormat(['YYYY-MM-DD']),
-			  validations.date()
-			],
-			country: "required|alpha|min:2|max:3",
-			province: "required|alpha|min:2|max:3"
-		}
-		const sintatization = {
-			email: "trim|lower_case|normalize_email",
-			truename: "trim|lower_case",
-			phone: "trim|lower_case",
-			gender: "trim|upper_case",
-			country: "trim|upper_case",
-			province: "trim|upper_case"
-		}
-
-		await validateAll(data, rules, Antl.list('validation'))
-		.then( async () => {
-
-			try {
-
-				const user = await User.findOrFail(auth.user.id)
-
-				sanitize(data, sintatization)
-
-				user.merge(data)
-				await user.save()
-
-				response.ok(user)
-
-			} catch (error) {
-				response.internalServerError()
-			}
-
-		})
-		.catch(dataError => {
-			console.log("Error Validate", dataError)
-			response.unprocessableEntity(dataError)
-		})
-
-	}
 
 	async updatePasswordAuth( { request, auth, response }){
 
