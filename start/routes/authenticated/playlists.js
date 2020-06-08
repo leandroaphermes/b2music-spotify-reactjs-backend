@@ -7,6 +7,7 @@ Route.group( ()=> {
   Route.post('/playlists', 'PlaylistController.store')
   Route.get('/playlists/:id', 'PlaylistController.show')
   Route.put('/playlists/:id', 'PlaylistController.update')
+  Route.delete('/playlists/:id', 'PlaylistController.destroy')
   Route.post('/playlists/:id/track/:track_id', 'PlaylistController.storeTrack')
   Route.delete('/playlists/:id/track/:track_id', 'PlaylistController.destroyTrack')
   

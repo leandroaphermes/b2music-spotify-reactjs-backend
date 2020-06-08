@@ -17,6 +17,8 @@ const Track = use('App/Models/Track')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Followers = use('App/Models/Followers')
 
+const RecordNotFoundException = use('App/Exceptions/RecordNotFoundException')
+
 const uuidv4 = require("uuid/v4");
 const Env = use('Env')
 const Helpers = use('Helpers')
@@ -234,6 +236,37 @@ class PlaylistController {
         .catch( dataError => {
             response.unprocessableEntity(dataError)
         })
+    }
+
+    async destroy({ request, auth, response }){
+
+        const data = request.params
+
+        const rules = {
+            id: "required|number"
+        }
+
+        await validateAll(data, rules, Antl.list("validation"))
+        .then( async () => {
+
+            try {
+
+
+                console.log("CHEGOU POR AQUI");
+                throw new RecordNotFoundException()
+                console.log("CHEGOU POR AQUI 2");
+
+             /*    const playlist = await Playlist.findOrFail(data.id)
+ */
+
+            } catch (error) {
+            }
+
+        })
+        .catch( dataError => {
+            response.unprocessableEntity(dataError)
+        })
+
     }
 
     async storeTrack({ request, auth, response }){

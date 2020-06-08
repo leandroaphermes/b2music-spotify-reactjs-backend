@@ -152,3 +152,21 @@ test('Editar Playlist via ID', async ({ assert, client }) => {
   assert.equal(response.body.name , "Sou um novo titulo para playlist")
 
 }).timeout(6000)
+
+test('Deletar Playlist via ID', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const playlist = await Factory.model("App/Models/Playlist", {
+    user_id: user.id
+  })
+
+
+  const response = await client.delete(`/playlists/${playlist.id}`)
+    .loginVia( user, "jwt")
+    .end()
+
+  response.assertStatus(204)
+  assert.isEmpty(response.body)
+
+})
