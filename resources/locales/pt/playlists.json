@@ -1,5 +1,6 @@
 {
     "ownerFiled": "Você não é dono desta playlist",
     "isAlreadyAddedTrack": "Esta musica ja foi adicionado na playlist",
-    "isAlreadyRemovedTrack": "Esta musica não existe nesta playlist"
+    "isAlreadyRemovedTrack": "Esta musica não existe nesta playlist",
+    "notFound": "Playlist não encontrada"
 }

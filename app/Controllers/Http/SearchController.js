@@ -97,6 +97,39 @@ class SearchController {
 
     }
 
+    async showTracks({ request, response }){
+        const data = request.params
+        const rules = {
+            search: "required|string|max:50"
+        }
+
+        await validateAll(data, rules, Antl.list('validation'))
+        .then( async() => {
+            try {
+                const tracks = await Track.query()
+                    .with('authors', (builder) => {
+                        builder.select([ "id", "name" ])
+                    })
+                    .with('album', (builder) => {
+                        builder.select([ "id", "name", "photo_url" ])
+                    })
+                    .where("name", "LIKE", `%${data.search}%`)
+                    .orderBy('playcount', 'desc')
+                    .fetch()
+                    
+                response.ok(tracks)
+
+            } catch (error) {
+                console.log(error);
+                
+                response.internalServerError(error)
+            }
+        })
+        .catch( dataError => {
+            response.unprocessableEntity(dataError)
+        })
+
+    }
 }
 
 module.exports = SearchController

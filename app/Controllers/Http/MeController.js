@@ -1,6 +1,6 @@
 'use strict'
 
-const { validateAll, validations } = use('indicative/validator')
+const { validate, validateAll, validations } = use('indicative/validator')
 const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
@@ -15,7 +15,6 @@ const Card = use('App/Models/Card')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const PlaylistHistory = use('App/Models/PlaylistHistory')
-
 
 const Hash = use('Hash')
 const moment = use('moment')
@@ -500,6 +499,7 @@ class MeController {
 		})
 
 	}
+
 
 }
 
