@@ -1,5 +1,6 @@
 'use strict'
 
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('Cards')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -18,7 +19,7 @@ test('Listando todos os Cards', async ({ assert, client }) => {
   await Factory.model('App/Models/Card').create()
 
 
-  const response = await client.get('/cards')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/cards`)
     .loginVia( await getUser(), 'jwt' )
     .end()
 
@@ -32,7 +33,7 @@ test('Criando um Card da tabela Cards', async ({ assert, client }) => {
 
   const { type, genre_id, title, description } = await Factory.model('App/Models/Card').make()
 
-  const response = await client.post('/cards')
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/cards`)
     .send({ type, genre_id, title, description })
     .loginVia(await getUser(), 'jwt')
     .end()
@@ -53,7 +54,7 @@ test('Adicionando Playlist nos Cards', async ({ assert, client }) => {
     user_id: user.id
   })
 
-  const response = await client.post(`/cards/${factoryCardID}/playlist/${factoryPlaylistID}`)
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/cards/${factoryCardID}/playlist/${factoryPlaylistID}`)
     .loginVia(user, "jwt")
     .end()
   

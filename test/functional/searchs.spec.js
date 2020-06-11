@@ -1,5 +1,5 @@
 'use strict'
-
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('Search')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -17,7 +17,7 @@ test('Procurando tudo', async ({ assert, client }) => {
 
 	const search = "da"
 
-	const response = await client.get(`/search/${search}`)
+	const response = await client.get(`${Env.get('PREFIX_ROUTER')}/search/${search}`)
     .loginVia( await getUser(), 'jwt')
     .end()
   

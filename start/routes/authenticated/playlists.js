@@ -1,3 +1,4 @@
+const Env = use('Env')
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
@@ -12,4 +13,7 @@ Route.group( ()=> {
   Route.delete('/playlists/:id/track/:track_id', 'PlaylistController.destroyTrack')
   
 
-}).middleware('auth').formats(['json'])
+})
+.middleware('auth')
+.formats(['json'])
+.prefix(Env.get('PREFIX_ROUTER'))

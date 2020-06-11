@@ -1,5 +1,5 @@
 'use strict'
-
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('User')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -15,7 +15,7 @@ async function getUser(data = {}){
 
 test('Listando Usuarios', async ({ assert, client }) => {
 
-  const response = await client.get('/users')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/users`)
     .loginVia( await getUser(), 'jwt')
     .end()
 
@@ -42,7 +42,7 @@ test('Criando Usuario', async ({ assert, client }) => {
     password_confirmation: '123123',
   })
 
-  const response = await client.post('/register')
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/register`)
   .send({
     username,
     email,
@@ -69,7 +69,7 @@ test('Fazendo login de Usuario comum', async ({ assert, client }) => {
     password: '123123'
   })
 
-  const response = await client.post('/auth')
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/auth`)
   .send({ email, password:'123123' })
   .end()
   
@@ -83,7 +83,7 @@ test('Pegando o Usuario via ID', async ({ assert, client }) => {
 
   const user = await getUser()
 
-  const response = await client.get(`/users/${user.id}`)
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/users/${user.id}`)
     .loginVia( user, 'jwt')
     .end()
 

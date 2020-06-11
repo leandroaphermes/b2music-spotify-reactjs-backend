@@ -15,7 +15,7 @@ class Playlist extends Model {
     }
     
     getPhotoUrl(photo_url){
-        return photo_url !== "" ? `${Env.get('APP_URL')}/playlists/file/image/${photo_url}` : ""
+        return photo_url !== "" ? `${Env.get('APP_URL')}/${Env.get('PREFIX_ROUTER')}/playlists/file/image/${photo_url}` : ""
     }
 
 }

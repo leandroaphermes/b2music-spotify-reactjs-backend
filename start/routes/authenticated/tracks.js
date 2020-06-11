@@ -1,3 +1,4 @@
+const Env = use('Env')
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
@@ -7,4 +8,7 @@ Route.group( ()=> {
   Route.post('/tracks', 'TrackController.store')
   Route.get('/tracks/:id', 'TrackController.show')
 
-}).middleware('auth').formats(['json'])
+})
+.middleware('auth')
+.formats(['json'])
+.prefix(Env.get('PREFIX_ROUTER'))

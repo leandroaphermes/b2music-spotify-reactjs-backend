@@ -1,5 +1,5 @@
 'use strict'
-
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('Me')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -18,7 +18,7 @@ test('Listando Cards para Home Page do usuario autenticado', async ({ assert, cl
 
   await Factory.model('App/Models/Card').create()
 
-  const response = await client.get('/me/home-page')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me/home-page`)
     .loginVia( await getUser(), "jwt")
     .end()
 
@@ -33,7 +33,7 @@ test('Listando Cards para Home Page do usuario autenticado', async ({ assert, cl
 test('Pegando dados do usuario autenticado', async({ assert, client }) => {
 
   const user = await getUser()
-  const response = await client.get('/me')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me`)
       .loginVia(user, 'jwt')
       .end()
 
@@ -57,7 +57,7 @@ test('Atualizando dados de usuario autenticado', async ({ assert, client }) => {
     email: user.email
   }
 
-  const response = await client.put(`/me`)
+  const response = await client.put(`${Env.get('PREFIX_ROUTER')}/me`)
     .send(update)
     .loginVia(user, 'jwt')
     .end()
@@ -75,7 +75,7 @@ test('Alterando senha de usuario autenticado', async ({ client }) => {
     password: "@123123"
   })
 
-  const response = await client.put(`/me/password`)
+  const response = await client.put(`${Env.get('PREFIX_ROUTER')}/me/password`)
     .send({
       password_old: "@123123",
       password_new: "@123123",
@@ -92,7 +92,7 @@ test('Listando todas as Playlists que o usuario autenticado esta seguindo', asyn
 
   const user = await getUser()
 
-  const response = await client.get('/me/playlists')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me/playlists`)
     .loginVia( user, 'jwt')
     .end()
 
@@ -103,7 +103,7 @@ test('Listando todas as Autores que o usuario autenticado esta seguindo', async 
 
   const user = await getUser()
 
-  const response = await client.get('/me/authors')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me/authors`)
     .loginVia( user, 'jwt')
     .end()
 
@@ -114,7 +114,7 @@ test('Listando todas as Albums que o usuario autenticado esta seguindo', async (
 
   const user = await getUser()
 
-  const response = await client.get('/me/albums')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me/albums`)
     .loginVia( user, 'jwt')
     .end()
 
@@ -127,7 +127,7 @@ test('Varificando se a playlist ou album esta sendo seguido', async ({ assert, c
 
   const id = 1
 
-  const response = await client.get(`/me/favorites/${id}/playlist`)
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me/favorites/${id}/playlist`)
     .loginVia( user, 'jwt')
     .end()
 

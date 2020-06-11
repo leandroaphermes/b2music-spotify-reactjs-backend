@@ -1,5 +1,6 @@
 'use strict'
 
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('Author')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -17,7 +18,7 @@ test('Listando Artistas', async ({ assert, client }) => {
 
   await Factory.model('App/Models/Author').create()
 
-  const response = await client.get('/authors')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/authors`)
     .loginVia( await getUser() , 'jwt')
     .end()
 
@@ -40,7 +41,7 @@ test('Criando um Artista na tabela de Author', async ({ client }) => {
   } = await Factory.model('App/Models/Author').make()
 
   
-  const response = await client.post('/authors')
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/authors`)
     .send({
       name, 
       photo_url,
@@ -65,7 +66,7 @@ test('Pegando um Artista via ID', async ({ assert, client }) => {
 
   const { id } = await Factory.model('App/Models/Author').create()
 
-  const response = await client.get(`/authors/${id}`)
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/authors/${id}`)
     .loginVia( await getUser() , 'jwt')
     .end()
 

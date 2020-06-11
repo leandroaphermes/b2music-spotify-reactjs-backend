@@ -1,5 +1,6 @@
 'use strict'
 
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('Genres')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -17,7 +18,7 @@ test('Listando os Generos', async ({ assert, client }) => {
 
   await Factory.model('App/Models/Genre').create()
 
-  const response = await client.get('/genres')
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/genres`)
     .loginVia( await getUser() , 'jwt')
     .end()
 
@@ -30,7 +31,7 @@ test('Criando um Genero na tabela Genres', async ({ assert, client }) => {
 
   const { name, description, url, color } = await Factory.model('App/Models/Genre').make()
 
-  const response = await client.post('/genres')
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/genres`)
     .send({ name, description, url, color })
     .loginVia( await getUser(), 'jwt' )
     .end()

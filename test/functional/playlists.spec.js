@@ -1,5 +1,5 @@
 'use strict'
-
+const Env = use('Env')
 const { test, trait } = use('Test/Suite')('Playlist')
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
@@ -21,7 +21,7 @@ test('Listando todas as Playlist', async ({ assert, client }) => {
       user_id: user.id
     })
 
-    const response = await client.get('/playlists')
+    const response = await client.get(`${Env.get('PREFIX_ROUTER')}/playlists`)
       .loginVia( user , 'jwt')
       .end()
 
@@ -39,7 +39,8 @@ test('Criando uma Playlist na tabela Playlists', async ({ assert, client }) => {
     user_id: user.id
   })
 
-  const response = await client.post('/playlists').send({ user_id, name, description })
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/playlists`)
+    .send({ user_id, name, description })
     .loginVia(user, 'jwt')
     .end()
 
@@ -58,7 +59,7 @@ test('Pegando uma Playlist via ID', async ({ assert, client }) => {
     user_id: user.id
   })
 
-  const response = await client.get(`/playlists/${id}`)
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/playlists/${id}`)
     .loginVia(user, 'jwt')
     .end()
 
@@ -88,7 +89,7 @@ test('Adicionando Track em uma Playlist', async ({ assert, client }) => {
     user_id: user.id
   })
 
-  const response = await client.post(`/playlists/${playlist.id}/track/${track.id}`)
+  const response = await client.post(`${Env.get('PREFIX_ROUTER')}/playlists/${playlist.id}/track/${track.id}`)
     .loginVia(user, 'jwt')
     .end()
 
@@ -117,7 +118,7 @@ test('Removendo Track em uma Playlist', async ({ assert, client }) => {
   })
   await playlist.tracks().attach(track.id)
 
-  const response = await client.delete(`/playlists/${playlist.id}/track/${track.id}`)
+  const response = await client.delete(`${Env.get('PREFIX_ROUTER')}/playlists/${playlist.id}/track/${track.id}`)
     .loginVia(user, 'jwt')
     .end()
 
@@ -134,7 +135,7 @@ test('Editar Playlist via ID', async ({ assert, client }) => {
     user_id: user.id
   })
 
-  const response = await client.put(`/playlists/${playlist.id}`)
+  const response = await client.put(`${Env.get('PREFIX_ROUTER')}/playlists/${playlist.id}`)
     .loginVia( user, "jwt")
     .send({
       name: "Sou um novo titulo para playlist",
@@ -157,12 +158,11 @@ test('Deletar Playlist via ID', async ({ assert, client }) => {
 
   const user = await getUser()
 
-  const playlist = await Factory.model("App/Models/Playlist", {
+  const playlist = await Factory.model("App/Models/Playlist").create({
     user_id: user.id
   })
 
-
-  const response = await client.delete(`/playlists/${playlist.id}`)
+  const response = await client.delete(`${Env.get('PREFIX_ROUTER')}/playlists/${playlist.id}`)
     .loginVia( user, "jwt")
     .end()
 
