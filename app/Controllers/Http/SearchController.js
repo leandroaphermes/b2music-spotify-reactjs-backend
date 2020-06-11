@@ -115,6 +115,7 @@ class SearchController {
                     })
                     .where("name", "LIKE", `%${data.search}%`)
                     .orderBy('playcount', 'desc')
+                    .limit(8)
                     .fetch()
                     
                 response.ok(tracks)
