@@ -89,6 +89,11 @@ class AlbumController {
     .then( async () => {
       try {
         const dataRes = await Album.query().where({id: data.id })
+          .with('author', (builder) => {
+            builder.select([
+              "id", "name"
+            ])
+          })
           .with('tracks', (builder) => {
             builder.with('authors', builder => {
               builder.select(['id', 'name'])
