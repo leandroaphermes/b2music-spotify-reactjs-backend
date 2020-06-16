@@ -17,6 +17,17 @@ class Album extends Model {
         return this.hasMany('App/Models/Track')
     }
 
+    static get dates() {
+        return super.dates.concat(['releasedt'])
+    }
+    
+    static castDates(field, value) {
+        if (field === 'releasedt') {
+            return value.format('YYYY-MM-DD')
+        }
+        return super.formatDates(field, value)
+    }
+
 }
 
 module.exports = Album

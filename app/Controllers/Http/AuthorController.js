@@ -12,89 +12,115 @@ const Author = use('App/Models/Author')
 
 class AuthorController {
 
-    async index(){
-        const data = await Author.all()
-        return data
+  async index(){
+      const data = await Author.all()
+      return data
+  }
+
+  async store({ request, response }){
+  
+      const data = request.only([ 
+          "name",
+          "photo_url",
+          "bio",
+          "site",
+          "wikipedia",
+          "instagram",
+          "twitter",
+          "facebook"
+      ])
+
+  const rules = {
+    name: [
+              validations.required(),
+              validations.min([ 3 ]),
+              validations.max([ 100 ]),
+              validations.regex( [new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g )] )
+          ],
+          photo_url: "required|url|min:4|max:255",
+          bio: "required|string|min:4|max:2064",
+          site: "required|url|min:4|max:255",
+          wikipedia: "required|url|min:2|max:255",
+          instagram: "required|string|min:2|max:255",
+          twitter: "required|string|min:2|max:255",
+          facebook: "required|string|min:2|max:255"
+  }
+  const sintatization = {
+          name: "trim",
+          photo_url: "trim",
+          bio: "trim",
+          site: "trim|lower_case",
+          wikipedia: "trim|lower_case",
+          instagram: "trim|lower_case",
+          twitter: "trim|lower_case",
+          facebook: "trim|lower_case"
+  }
+
+  await validateAll(data, rules, Antl.list('validation'))
+  .then( async () => {
+
+    sanitize(data, sintatization)
+
+          const dataRes = await Author.create(data)
+          response.created(dataRes)
+          return data
+
+  })
+  .catch( (dataError) => {
+          console.log("Validator Error:", dataError, data.name)
+    response.unprocessableEntity(dataError)
+  })
+
+  }
+
+  async show ({ request, response}) {
+
+    const data = request.params
+    const rules = {
+        id: "required|number"
     }
+    await validateAll(data, rules, Antl.list('validation'))
+    .then( async () => {
+      try {
 
-    async store({ request, response }){
-    
-        const data = request.only([ 
-            "name",
-            "photo_url",
-            "bio",
-            "site",
-            "wikipedia",
-            "instagram",
-            "twitter",
-            "facebook"
-        ])
 
-		const rules = {
-			name: [
-                validations.required(),
-                validations.min([ 3 ]),
-                validations.max([ 100 ]),
-                validations.regex( [new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g )] )
-            ],
-            photo_url: "required|url|min:4|max:255",
-            bio: "required|string|min:4|max:2064",
-            site: "required|url|min:4|max:255",
-            wikipedia: "required|url|min:2|max:255",
-            instagram: "required|string|min:2|max:255",
-            twitter: "required|string|min:2|max:255",
-            facebook: "required|string|min:2|max:255"
-		}
-		const sintatization = {
-            name: "trim",
-            photo_url: "trim",
-            bio: "trim",
-            site: "trim|lower_case",
-            wikipedia: "trim|lower_case",
-            instagram: "trim|lower_case",
-            twitter: "trim|lower_case",
-            facebook: "trim|lower_case"
-		}
+        const dataRes = await Author.query()
+          .where({ id: data.id })
+          .with('tracks', (builder) => {
+            builder
+              .select([
+                "id",
+                "name",
+                "album_id",
+                "duration"
+              ])
+              .with('album')
+              .orderBy('playcount', 'desc')
+              .limit(5)
+          })
+          .with('albums')
+          .first()
 
-		await validateAll(data, rules, Antl.list('validation'))
-		.then( async () => {
 
-			sanitize(data, sintatization)
 
-            const dataRes = await Author.create(data)
-            response.created(dataRes)
-            return data
 
-		})
-		.catch( (dataError) => {
-            console.log("Validator Error:", dataError, data.name)
-			response.unprocessableEntity(dataError)
-		})
- 
-    }
 
-    async show ({ request, response}) {
+        response.ok(dataRes)
 
-        const data = request.params
-        const rules = {
-            id: "required|number"
-        }
-        await validateAll(data, rules, Antl.list('validation'))
-        .then( async () => {
-            try {
 
-                const dataRes = await Author.findOrFail(data.id)
-                response.ok(dataRes)
-            } catch (error) {
-                response.internalServerError()
-            }
-        })
-        .catch( dataError => {
-			console.error("Erro Author: ", dataError);
-            request.unprocessableEntity(dataError)
-        })
 
-    }
+      } catch (error) {
+        console.log(error);
+        
+        response.internalServerError()
+      }
+    })
+    .catch( dataError => {
+  console.error("Erro Author: ", dataError);
+        request.unprocessableEntity(dataError)
+    })
+
+  }
 }
 
 module.exports = AuthorController
