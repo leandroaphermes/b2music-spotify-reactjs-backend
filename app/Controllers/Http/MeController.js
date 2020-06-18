@@ -163,10 +163,14 @@ class MeController {
 				})
 				.select([
 					"id",
-					"playlist_id"
+					"playlist_id",
+					"album_id"
 				])
 				.with('playlist', (builder) => {
 					builder.select([ "id", "name", "description", "photo_url" ])
+				})
+				.with('album', (builder) => {
+					builder.select([ "id", "name", "photo_url" ])
 				})
 				.orderBy("updated_at", "desc")
 				.limit(10)
@@ -184,30 +188,49 @@ class MeController {
 
 		const data = request.only([ "action_type", "action_click", "action_trigger", "payload" ])
 
-		switch (data.action_type) {
-			case "set-new-playlist":
+		if(data.action_type === "set-new-playlist" ){
 
-				const dataRes = await PlaylistHistory.query()
-					.where({ 
-						playlist_id: data.payload.playlist_id, 
-						user_id: auth.user.id 
-					})
-					.first()
+			const dataRes = await PlaylistHistory.query()
+				.where({ 
+					playlist_id: data.payload.playlist_id, 
+					user_id: auth.user.id 
+				})
+				.first()
 
-				if(dataRes && dataRes.id){
-					dataRes.updated_at = moment().format('DD-MM-YYYY HH:mm:ss')
-					await dataRes.save()
-				}else{
-					await PlaylistHistory.create({
-						playlist_id: data.payload.playlist_id,
-						user_id: auth.user.id,
-						action: data.action_click
-					})
-				}
-				break;
-		
-			default:
-				break;
+			if(dataRes && dataRes.id){
+				dataRes.updated_at = moment().format('DD-MM-YYYY HH:mm:ss')
+				await dataRes.save()
+			}else{
+				await PlaylistHistory.create({
+					playlist_id: data.payload.playlist_id,
+					user_id: auth.user.id,
+					action: data.action_click
+				})
+			}
+
+
+
+		}else if(data.action_type === "set-new-album") {
+
+			const dataRes = await PlaylistHistory.query()
+				.where({ 
+					album_id: data.payload.album_id, 
+					user_id: auth.user.id 
+				})
+				.first()
+
+			if(dataRes && dataRes.id){
+				dataRes.updated_at = moment().format('DD-MM-YYYY HH:mm:ss')
+				await dataRes.save()
+			}else{
+				await PlaylistHistory.create({
+					album_id: data.payload.album_id,
+					user_id: auth.user.id,
+					action: data.action_click
+				})
+			}
+
+
 		}
 
 		response.noContent()
@@ -295,7 +318,7 @@ class MeController {
 		const dataRes = await Followers.query()
 			.select([
 				"id",
-				"tack_id",
+				"track_id",
 				"type",
 				"created_at"
 			])
@@ -497,6 +520,43 @@ class MeController {
 		.catch( dataError => {
 			response.unprocessableEntity(dataError)
 		})
+
+	}
+
+	async showFollowersTracksPlayer({ auth, response }){
+
+		try {
+			
+			const dataRes = await Followers.query()
+				.select([
+					"track_id"
+				])
+				.where({
+					user_id: auth.user.id,
+					type: "track"
+				})
+				.with('track', (builder) => {
+					builder
+					.with('album', (builder) => {
+						builder.select([ "id", "name" ])
+					})
+					.with('authors', (builder) => {
+						builder.select([ "id", "name" ])
+					})
+				})
+				.orderBy("created_at", "desc")
+				.fetch()
+
+			response.ok({
+				id: 0,
+				name: "favorite",
+				tracks: dataRes.rows.map( row => (row.toJSON().track) )
+			})
+
+		} catch (error) {
+			console.log(error)
+			response.internalServerError()
+		}
 
 	}
 

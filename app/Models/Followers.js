@@ -17,6 +17,10 @@ class Followers extends Model {
     return this.belongsTo('App/Models/Album')
   }
 
+  track(){
+    return this.belongsTo('App/Models/Track')
+  }
+
 }
 
 module.exports = Followers

@@ -50,7 +50,7 @@ class SearchController {
 
                 const playlists = await Playlist.query()
                     .with('owner', (builder) => {
-                        builder.select([ "id", "truename" ])
+                        builder.select([ "id", "username", "truename" ])
                     })
                     .where("name", "LIKE", `%${data.search}%`)
                     .orderBy('playcount', 'desc')

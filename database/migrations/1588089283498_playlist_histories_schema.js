@@ -10,9 +10,17 @@ class PlaylistHistoriesSchema extends Schema {
       table
         .integer('playlist_id')
         .unsigned()
-        .notNullable()
+        .nullable()
         .references('id')
         .inTable('playlists')
+        .onDelete('CASCADE')
+        .onUpdate('CASCADE')
+      table
+        .integer('album_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('albums')
         .onDelete('CASCADE')
         .onUpdate('CASCADE')
       table

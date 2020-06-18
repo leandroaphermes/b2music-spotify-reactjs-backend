@@ -136,3 +136,19 @@ test('Varificando se a playlist ou album esta sendo seguido', async ({ assert, c
   assert.isBol
 
 })
+
+test('Lista de musicas favoritas para o player', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/me/favorites-player`)
+    .loginVia( user, 'jwt')
+    .end()
+
+  response.assertStatus(200)
+  assert.isObject( response.body )
+  assert.exists( response.body.id )
+  assert.exists( response.body.tracks )
+  assert.isArray( response.body.tracks )
+
+})

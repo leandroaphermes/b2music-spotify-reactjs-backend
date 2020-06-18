@@ -8,6 +8,9 @@ class PlaylistHistory extends Model {
   playlist (){
     return this.belongsTo("App/Models/Playlist")
   }
+  album (){
+    return this.belongsTo("App/Models/Album")
+  }
 
 }
 

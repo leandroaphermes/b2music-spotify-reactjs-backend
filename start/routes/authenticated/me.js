@@ -14,6 +14,7 @@ Route.group( ()=> {
   Route.get('/me/authors', 'MeController.showFollowersAuthors')
   Route.get('/me/albums', 'MeController.showFollowersAlbums')
   Route.get('/me/favorites', 'MeController.showFollowersTracks')
+  Route.get('/me/favorites-player', 'MeController.showFollowersTracksPlayer')
   Route.get('/me/favorites/:id/:type', 'MeController.showFollow')
   Route.post('/me/favorites/:id/:type', 'MeController.createFollow')
   Route.delete('/me/favorites/:id/:type', 'MeController.deleteFollow')
