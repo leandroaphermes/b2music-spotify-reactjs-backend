@@ -1,6 +1,6 @@
 ## BackEnd Spotify Clone com AdonisJS
 
-Projeto iniciando com intuito de aprender mais sobre o backend em JavaScript e com Framerwork como o [AdonisJS](https://adonisjs.com)
+Projeto iniciando com intuito de aprender mais sobre o backend em JavaScript e com Framework como o [AdonisJS](https://adonisjs.com)
 
 ## Requerimentos
 Esse projeto tem [front-end](https://github.com/leandroaphermes/b2music-spotify-reactjs) que faz a parte.
