@@ -54,10 +54,11 @@ Factory.blueprint('App/Models/Album', (faker, i , data = { }) => {
 })
 
 Factory.blueprint('App/Models/Genre', (faker, i , data = { }) => {
+    let name = faker.username()
     return {
-        name: faker.name(),
+        name: name.toUpperCase(),
         description: faker.paragraph({ sentences: 1 }),
-        url: faker.url({protocol: 'https' }),
+        url: name.toLowerCase(),
         color: "F1215f",
         ...data
     }

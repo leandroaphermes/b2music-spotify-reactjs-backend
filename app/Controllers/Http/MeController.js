@@ -16,6 +16,9 @@ const Card = use('App/Models/Card')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const PlaylistHistory = use('App/Models/PlaylistHistory')
 
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const Playlist = use('App/Models/Playlist')
+
 const Hash = use('Hash')
 const moment = use('moment')
 
@@ -153,28 +156,34 @@ class MeController {
 			const dataRes = {
 
 				cards: await Card.query()
-				.with('playlists', (builder) =>{
-					builder.select([ "id", "name", "description", "photo_url" ])
-				} ).fetch(),
+					.with('playlists', (builder) =>{
+						builder.select([ "id", "name", "description", "photo_url" ])
+					})
+					.fetch(),
 
 				playlist_histories: await PlaylistHistory.query()
-				.where({
-					user_id: auth.user.id
-				})
-				.select([
-					"id",
-					"playlist_id",
-					"album_id"
-				])
-				.with('playlist', (builder) => {
-					builder.select([ "id", "name", "description", "photo_url" ])
-				})
-				.with('album', (builder) => {
-					builder.select([ "id", "name", "photo_url" ])
-				})
-				.orderBy("updated_at", "desc")
-				.limit(10)
-				.fetch()
+					.where({
+						user_id: auth.user.id
+					})
+					.select([
+						"id",
+						"playlist_id",
+						"album_id"
+					])
+					.with('playlist', (builder) => {
+						builder.select([ "id", "name", "description", "photo_url" ])
+					})
+					.with('album', (builder) => {
+						builder.select([ "id", "name", "photo_url" ])
+					})
+					.orderBy("updated_at", "desc")
+					.limit(10)
+					.fetch(),
+
+				playlist_all: await Playlist.query()
+					.orderBy('created_at', 'desc')
+					.limit(10)
+					.fetch()
 
 			}
 			return dataRes

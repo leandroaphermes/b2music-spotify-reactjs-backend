@@ -42,3 +42,21 @@ test('Criando um Genero na tabela Genres', async ({ assert, client }) => {
   assert.exists(response.body.name)
 
 })
+
+test('Pegando informações de uma Genero por tag', async ({ assert, client }) => {
+
+  const user = await getUser()
+
+  const genre = await Factory.model('App/Models/Genre').create()
+
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/genres/${genre.url}`)
+  .loginVia( user, 'jwt')
+  .end()
+
+  response.assertStatus(200)
+  assert.isObject(response.body)
+  assert.exists(response.body.id)
+  assert.exists(response.body.name)
+  assert.isArray(response.body.albums)
+
+})
