@@ -1,4 +1,5 @@
 'use strict'
+const Env = use('Env')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
@@ -32,6 +33,13 @@ class User extends Model {
     return super.formatDates(field, value)
   }
   
+  playlists (){
+    return this.hasMany('App/Models/Playlist')
+  }
+
+  getPhotoUrl(photo_url){
+    return photo_url !== "" ? `${Env.get('APP_URL')}/${Env.get('PREFIX_ROUTER')}/users/photo/${photo_url}` : ""
+  }
   /**
    * A relationship on tokens is required for auth to
    * work. Since features like `refreshTokens` or

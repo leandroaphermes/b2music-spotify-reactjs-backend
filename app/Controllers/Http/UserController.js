@@ -37,7 +37,8 @@ class UserController {
 					id: user.id,
 					email: user.email,
 					username: user.username,
-					truename: user.truename
+					truename: user.truename,
+					photo_url: user.photo_url
 				}
 
 				response.ok(result)
@@ -127,13 +128,24 @@ class UserController {
 
 		const data = request.params
 		const rules = {
-			id: "required|number"
+			username: "required|string|min:3|max:32"
 		}
 		await validateAll(data, rules, Antl.list('validation'))
 		.then( async () => {
 			try {
 				
-				const dataRes = await User.findOrFail(data.id)
+				const dataRes = await User.query()
+					.where({
+						username: data.username
+					})
+					.setHidden([
+						"password",
+						"phone",
+						"birth"
+					])
+					.with('playlists')
+					.first()
+
 				response.ok(dataRes)
 			} catch (error) {
 				response.internalServerError()

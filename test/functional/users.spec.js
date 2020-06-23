@@ -79,11 +79,11 @@ test('Fazendo login de Usuario comum', async ({ assert, client }) => {
 
 })
 
-test('Pegando o Usuario via ID', async ({ assert, client }) => {
+test('Pegando informações do Usuario via username ', async ({ assert, client }) => {
 
   const user = await getUser()
 
-  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/users/${user.id}`)
+  const response = await client.get(`${Env.get('PREFIX_ROUTER')}/users/${user.username}`)
     .loginVia( user, 'jwt')
     .end()
 

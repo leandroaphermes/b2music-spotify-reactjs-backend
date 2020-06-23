@@ -174,7 +174,12 @@ class MeController {
 						builder.select([ "id", "name", "description", "photo_url" ])
 					})
 					.with('album', (builder) => {
-						builder.select([ "id", "name", "photo_url" ])
+						builder
+							.select([ "id", "name", "photo_url", "author_id" ])
+							.with('author', (builder) => {
+								builder.
+									select([ "id", "name" ])
+							})
 					})
 					.orderBy("updated_at", "desc")
 					.limit(10)
