@@ -1,6 +1,6 @@
 'use strict'
 
-const { validate, validateAll, validations } = use('indicative/validator')
+const { validateAll, validations } = use('indicative/validator')
 const { sanitize } = use('indicative/sanitizer')
 const Antl = use('Antl')
 
@@ -19,6 +19,12 @@ const PlaylistHistory = use('App/Models/PlaylistHistory')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Playlist = use('App/Models/Playlist')
 
+const { UPLOAD_IMG, UPLOAD_IMG_EXTNAMES, UPLOAD_IMG_SIZE } = require('../../../config/upload.js')
+
+const uuidv4 = require("uuid/v4");
+const { findByOrFail } = require('@adonisjs/lucid/src/Lucid/Model')
+const Env = use('Env')
+const Helpers = use('Helpers')
 const Hash = use('Hash')
 const moment = use('moment')
 
@@ -148,6 +154,50 @@ class MeController {
 			console.log("Validation: ", dataError)
 			response.unprocessableEntity(dataError)
 		})
+
+	}
+
+	async uploadPhoto({ request, auth, response }) {
+
+		try {
+
+			const dataRes = await User.findOrFail(auth.user.id)
+
+
+			const photo = request.file('photo', {
+				types: UPLOAD_IMG,
+				extnames: UPLOAD_IMG_EXTNAMES,
+				size: UPLOAD_IMG_SIZE
+			})
+	
+			const	filename = `${new Date().getTime()}-${uuidv4()}.${photo.subtype}`
+	
+			await photo.move( Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/images/users`), {
+				name: filename,
+				overwrite: true
+			})
+	
+			if (!photo.moved()) {
+				const erro = photo.error()
+				return response.unprocessableEntity({
+					message: erro.message,
+					type: erro.type,
+					field: erro.fieldName
+				})
+			}
+
+			dataRes.photo_url = filename
+			await dataRes.save()
+			
+			response.ok({
+				photo_url: dataRes.toObject().photo_url
+			})
+
+		} catch (error) {
+			response.badRequest({
+				message: Antl.formatMessage('users.notChangeImage')
+			})
+		}
 
 	}
 

@@ -12,7 +12,7 @@ class Track extends Model {
     }
 
     getSrc(src){
-        return `${Env.get('APP_URL')}/${Env.get('PREFIX_ROUTER')}/tracks/file/${src}`
+        return `${Env.get('NODE_ENV') === 'development' ? Env.get('APP_URL') : Env.get('APP_URL_PUBLIC')}/${Env.get('PREFIX_ROUTER')}/tracks/file/${src}`
     }
 
     album(){

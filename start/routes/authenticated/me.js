@@ -7,6 +7,7 @@ Route.group( ()=> {
   Route.get('/me', 'MeController.show')
   Route.put('/me', 'MeController.update')
   Route.put('/me/password', 'MeController.updatePassword')
+  Route.post('/me/upload-photo', 'MeController.uploadPhoto')
   Route.get('/me/home-page', 'MeController.homePage')
   
   

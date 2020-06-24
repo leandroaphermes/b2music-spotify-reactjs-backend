@@ -10,7 +10,9 @@ const uniqueValidation = use("App/Validations/Extends/unique.js")
 const User = use('App/Models/User')
 
 
+const Env = use('Env')
 const Hash = use('Hash')
+const Helpers = use('Helpers')
 
 class UserController {
 
@@ -289,7 +291,15 @@ class UserController {
 
 	}
 
-	
+	fileImage({ params, response}){
+
+		if(params.file === ""){
+			return ""
+		}
+
+		return response.download(Helpers.tmpPath(`${Env.get('STORAGE_FILLES')}/images/users/${params.file}`))
+
+	}
 }
 
 module.exports = UserController

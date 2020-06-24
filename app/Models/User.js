@@ -38,7 +38,7 @@ class User extends Model {
   }
 
   getPhotoUrl(photo_url){
-    return photo_url !== "" ? `${Env.get('APP_URL')}/${Env.get('PREFIX_ROUTER')}/users/photo/${photo_url}` : ""
+    return photo_url !== "" ? `${Env.get('NODE_ENV') === 'development' ? Env.get('APP_URL') : Env.get('APP_URL_PUBLIC')}/${Env.get('PREFIX_ROUTER')}/users/photo/${photo_url}` : ""
   }
   /**
    * A relationship on tokens is required for auth to
