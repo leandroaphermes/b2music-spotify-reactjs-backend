@@ -71,7 +71,7 @@ class SearchController {
                     .paginate(1, 5)
 
                 const users = await User.query()
-                    .select([ "id", "truename" ])
+                    .select([ "id", "username", "truename" ])
                     .where("truename", "LIKE", `%${data.search}%`)
                     .orderBy('truename', 'asc')
                     .paginate(1, 5)

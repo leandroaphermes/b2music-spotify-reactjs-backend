@@ -40,7 +40,7 @@ class UserController {
 					email: user.email,
 					username: user.username,
 					truename: user.truename,
-					photo_url: user.photo_url
+					photo_url: user.toJSON().photo_url
 				}
 
 				response.ok(result)
