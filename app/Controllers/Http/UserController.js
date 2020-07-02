@@ -112,8 +112,8 @@ class UserController {
 				sanitize(data, sintatization)
 
 				delete data.password_confirmation
-				const dataRes = await User.create(data)
-				response.created(dataRes)
+				await User.create(data)
+				response.created()
 
 			} catch (error) {
 				response.internalServerError()

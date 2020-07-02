@@ -19,6 +19,9 @@ const PlaylistHistory = use('App/Models/PlaylistHistory')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Playlist = use('App/Models/Playlist')
 
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const Album = use('App/Models/Album')
+
 const { UPLOAD_IMG, UPLOAD_IMG_EXTNAMES, UPLOAD_IMG_SIZE } = require('../../../config/upload.js')
 
 const uuidv4 = require("uuid/v4");
@@ -236,6 +239,15 @@ class MeController {
 					.fetch(),
 
 				playlist_all: await Playlist.query()
+					.orderBy('created_at', 'desc')
+					.limit(10)
+					.fetch(),
+
+				album_all: await Album.query()
+					.with('author', (builder) => {
+						builder.
+							select([ "id", "name" ])
+					})
 					.orderBy('created_at', 'desc')
 					.limit(10)
 					.fetch()
