@@ -11,6 +11,11 @@ class CountryController {
     }
 
     async show({ request, response }){
+
+        if(!request.params.country_code || request.params.country_code.length != 2){
+            return response.notFound()
+        }
+
         const data = await fs.readFileSync(Helpers.resourcesPath("countrys-and-provinces-json/all-provinces.json"))
         const dataParse = JSON.parse(data)
         let dataRes = dataParse.filter(  provinces => provinces.country_code === request.params.country_code )

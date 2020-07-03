@@ -25,7 +25,6 @@ const Album = use('App/Models/Album')
 const { UPLOAD_IMG, UPLOAD_IMG_EXTNAMES, UPLOAD_IMG_SIZE } = require('../../../config/upload.js')
 
 const uuidv4 = require("uuid/v4");
-const { findByOrFail } = require('@adonisjs/lucid/src/Lucid/Model')
 const Env = use('Env')
 const Helpers = use('Helpers')
 const Hash = use('Hash')

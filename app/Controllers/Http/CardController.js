@@ -13,78 +13,89 @@ const Card = use('App/Models/Card')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Playlist = use('App/Models/Playlist')
 
+const NotFoundException = use('App/Exceptions/NotFoundException')
+
 class CardController {
 
-    async index(){
+  async index(){
+    const dataRes = await Card.all()
+    return dataRes
+  }
 
-        const dataRes = await Card.all()
+  async store({ request, response }){
 
-        return dataRes
+    const data = request.only([ "type", "title", "genre_id", "description"])
+
+    const rules = {
+      type: "required|string|in:latest,all,genre",
+      genre_id: 'required_when:type,genre|number',
+      title: "required|string|min:4|max:100",
+      description: "required|string|min:4|max:255"
     }
 
-    async store({ request, response }){
+    await validateAll(data, rules, Antl.list("validation"))
+    .then( async () => {
+      try {
 
-        const data = request.only([ "type", "title", "genre_id", "description"])
+        const dataRes = await Card.create(data)
+        response.created(dataRes)
 
-        const rules = {
-            type: "required|string|in:latest,all,genre",
-            genre_id: 'required_when:type,genre|number',
-            title: "required|string|min:4|max:100",
-            description: "required|string|min:4|max:255"
+      } catch (error) {
+        console.log(error)
+        response.internalServerError()
+      }
+    })
+    .catch( dataError => {
+        console.log("Validator:", dataError)
+        response.unprocessableEntity(dataError)
+    })
+
+  }
+
+  async storePlaylist({ params, response }){
+
+    const data = params
+    const rules = {
+      id: "required|number",
+      playlist_id: "required|number"
+    }
+
+    await validateAll(data, rules, Antl.list('validation'))
+    .then( async () => {
+
+      try {
+          
+        const card = await Card.find(data.id)
+        if(!card){
+          throw new NotFoundException(Antl.formatMessage("card.notFound"))
         }
 
-        await validateAll(data, rules, Antl.list("validation"))
-        .then( async () => {
-            try {
-                
-                const dataRes = await Card.create(data)
-                response.created(dataRes)
-
-            } catch (error) {
-                console.log(error)
-            }
-        })
-        .catch( dataError => {
-            console.log("Validator:", dataError)
-            response.unprocessableEntity(dataError)
-        })
-
-    }
-
-    async storePlaylist({ params, response }){
-
-        const data = params
-        const rules = {
-            id: "required|number",
-            playlist_id: "required|number"
+        const playlist = await Playlist.find(data.playlist_id)
+        if(!playlist){
+          throw new NotFoundException(Antl.formatMessage("playlist.notFound"))
         }
 
-        await validateAll(data, rules, Antl.list('validation'))
-        .then( async () => {
+        await card.playlists().attach([ playlist.id ])
+        response.noContent()
 
-            try {
-                
-                const card = await Card.findOrFail(data.id)
+      } catch (error) {
+        if(error instanceof NotFoundException ){
+          return response.notFound({
+            message: error.message
+          })
+        }else{
+          response.internalServerError()
+        }
+      }
 
-                const playlist = await Playlist.findOrFail(data.playlist_id)
-
-                await card.playlists().attach([ playlist.id ])
-
-                response.noContent()
-
-            } catch (error) {
-                console.log(error)
-                response.internalServerError()
-            }
-
-        })
-        .catch( dataError => {
-            console.log("Validator: ", dataError)
-            response.unprocessableEntity(dataError)
-        })
+    })
+    .catch( dataError => {
+        console.log("Validator: ", dataError)
+        response.unprocessableEntity(dataError)
+    })
 
 
-    }
+  }
 
 }
 

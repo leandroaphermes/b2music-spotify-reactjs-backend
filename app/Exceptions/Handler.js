@@ -1,7 +1,7 @@
 'use strict'
 
 const BaseExceptionHandler = use('BaseExceptionHandler')
-
+const NotFoundException = use('App/Exceptions/NotFoundException')
 /**
  * This class handles all exceptions thrown during
  * the HTTP request lifecycle.
@@ -22,6 +22,13 @@ class ExceptionHandler extends BaseExceptionHandler {
    */
   async handle (error, { request, response }) {
     console.log(error);
+    
+    if(error instanceof NotFoundException ){
+      return response.notFound({
+        message: error.message
+      })
+    }
+
     response.status(error.status).send(error.message)
   }
 

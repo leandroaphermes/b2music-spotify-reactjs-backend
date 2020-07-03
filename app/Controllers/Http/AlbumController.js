@@ -10,6 +10,10 @@ const Antl = use('Antl')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Album = use('App/Models/Album')
 
+const NotFoundException = use('App/Exceptions/NotFoundException')
+
+const { ALFA_NUMBER_SPACE_CS } = require('../../../config/const-regex')
+
 class AlbumController {
 
   async index() {
@@ -35,7 +39,7 @@ class AlbumController {
               validations.required(),
               validations.min([ 3 ]),
               validations.max([ 100 ]),
-              validations.regex( [new RegExp( /^(?:[0-9a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ]+\s?)*$/g )] )
+              validations.regex( [ ALFA_NUMBER_SPACE_CS ] )
           ],
           categories: "in:single,ep,album",
           releasedt: [
@@ -56,18 +60,18 @@ class AlbumController {
       .then( async () => {
           try {
               
-              sanitize(data, sintatization)
+            sanitize(data, sintatization)
 
-              const { genres, ...rest_data } = data
+            const { genres, ...rest_data } = data
 
-              const dataRes = await Album.create(rest_data)
-              dataRes.genres().attach(genres)
+            const dataRes = await Album.create(rest_data)
+            dataRes.genres().attach(genres)
 
-              response.created(dataRes)
+            response.created(dataRes)
 
           } catch (error) {
-              console.log(error);
-              
+            console.log(error);
+            response.internalServerError()
           }
       })
       .catch( dataError => {
@@ -103,10 +107,20 @@ class AlbumController {
             })
           })
           .first()
+
+        if(!dataRes){
+          throw new NotFoundException( Antl.formatMessage("album.notFound") )
+        }
+
         response.ok(dataRes)
       } catch (error) {
-          console.log(error)
+        if(error instanceof NotFoundException ){
+          return response.notFound({
+            message: error.message
+          })
+        }else{
           response.internalServerError()
+        }
       }
     })
     .catch( dataError => {
