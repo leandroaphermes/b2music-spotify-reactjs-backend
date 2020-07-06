@@ -268,7 +268,7 @@ class UserController {
 	
 				if(!validedPassOld){
 					return response.forbidden({
-						message: Antl.formatMessage("users.passwordOldValidFailed")
+						message: Antl.formatMessage("user.passwordOldValidFailed")
 					})
 				}
 	

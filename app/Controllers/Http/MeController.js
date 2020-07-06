@@ -22,6 +22,10 @@ const Playlist = use('App/Models/Playlist')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Album = use('App/Models/Album')
 
+const ForbiddenException = use('App/Exceptions/ForbiddenException')
+const { ModelNotFoundException } = require('@adonisjs/lucid/src/Exceptions')
+
+const { ALFA_NUMBER_SPACE_CS, PHONE_VALIDATION, PASSWORD_VALIDATION } = require('../../../config/const-regex')
 const { UPLOAD_IMG, UPLOAD_IMG_EXTNAMES, UPLOAD_IMG_SIZE } = require('../../../config/upload.js')
 
 const uuidv4 = require("uuid/v4");
@@ -57,8 +61,18 @@ class MeController {
 		])
 				
 		const rules = {
-			truename: "required|min:4|max:100",
-			phone: "required|min:7|max:20",
+			truename: [
+				validations.required(),
+				validations.min([4]),
+				validations.max([100]),
+				validations.regex([ ALFA_NUMBER_SPACE_CS ]),
+			],
+			phone: [
+				validations.required(),
+				validations.min([7]),
+				validations.max([20]),
+				validations.regex([ PHONE_VALIDATION ]),
+			],
 			gender: "required|alpha|in:F,M",
 			birth: [
 			  validations.required(),
@@ -69,7 +83,7 @@ class MeController {
 			province: "required|alpha|min:2|max:3"
 		}
 		const sintatization = {
-			truename: "trim|lower_case",
+			truename: "trim",
 			phone: "trim|lower_case",
 			gender: "trim|upper_case",
 			country: "trim|upper_case",
@@ -91,12 +105,17 @@ class MeController {
 				response.ok(user)
 
 			} catch (error) {
-				response.internalServerError()
+				if(error instanceof ModelNotFoundException){
+					response.forbidden({
+						message: Antl.formatMessage("user.userBadPerssionSave")
+					})
+				}else{
+					response.internalServerError()
+				}
 			}
 
 		})
 		.catch(dataError => {
-			console.log("Error Validate", dataError)
 			response.unprocessableEntity(dataError)
 		})
 
@@ -114,13 +133,13 @@ class MeController {
 				validations.required(),
 				validations.min([6]),
 				validations.max([32]),
-				validations.regex([/[a-zA-Z0-9!@#$%&\-_.]/])
+				validations.regex([ PASSWORD_VALIDATION ])
 			],
 			password_new: [
 				validations.required(),
 				validations.min([6]),
 				validations.max([32]),
-				validations.regex([/[a-zA-Z0-9!@#$%&\-_.]/]),
+				validations.regex([ PASSWORD_VALIDATION ]),
 				validations.confirmed()
 			]
 		}
@@ -135,9 +154,7 @@ class MeController {
 				const validedPassOld = await Hash.verify(data.password_old, user.password )
 	
 				if(!validedPassOld){
-					return response.forbidden({
-						message: Antl.formatMessage("users.passwordOldValidFailed")
-					})
+					throw new ForbiddenException(Antl.formatMessage("user.passwordOldValidFailed"))
 				}
 	
 				user.merge({
@@ -147,13 +164,21 @@ class MeController {
 
 				
 			} catch (error) {
-                console.log(error)
-				response.internalServerError()
+				if(error instanceof ModelNotFoundException ){
+					return response.forbidden({
+						message: Antl.formatMessage("user.userBadPerssionSave")
+					})
+				}else if(error instanceof ForbiddenException ){
+					return response.forbidden({
+						message: error.message
+					})
+				}else{
+					response.internalServerError()
+				}
 			}
 
 		})
 		.catch( dataError => {
-			console.log("Validation: ", dataError)
 			response.unprocessableEntity(dataError)
 		})
 
@@ -196,9 +221,15 @@ class MeController {
 			})
 
 		} catch (error) {
-			response.badRequest({
-				message: Antl.formatMessage('users.notChangeImage')
-			})
+			if(error instanceof ModelNotFoundException ){
+				return response.forbidden({
+					message: Antl.formatMessage("user.userBadPerssionSave")
+				})
+			}else{
+				response.badRequest({
+					message: Antl.formatMessage('user.notChangeImage')
+				})
+			}
 		}
 
 	}
@@ -459,15 +490,9 @@ class MeController {
 					.first()
 
 
-				if(dataRes){
-					return response.ok({
-						favorite: true
-					})
-				}else{
-					return response.ok({
-						favorite: false
-					})
-				}
+				return response.ok({
+					favorite: !!dataRes
+				})
 
 			} catch (error) {
 				response.internalServerError()
@@ -629,7 +654,6 @@ class MeController {
 			})
 
 		} catch (error) {
-			console.log(error)
 			response.internalServerError()
 		}
 
