@@ -9,6 +9,15 @@ const uniqueValidation = use("App/Validations/Extends/unique.js")
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User')
 
+const NotFoundException = use('App/Exceptions/NotFoundException')
+const ForbiddenException = use('App/Exceptions/ForbiddenException')
+
+const { ALFA_NUMBER_SPACE_CS, 
+				PHONE_VALIDATION, 
+				PASSWORD_VALIDATION, 
+				USERNAME_VALIDATION
+			} = require('../../../config/const-regex')
+const { ModelNotFoundException } = require('@adonisjs/lucid/src/Exceptions')
 
 const Env = use('Env')
 const Hash = use('Hash')
@@ -40,13 +49,11 @@ class UserController {
 					email: user.email,
 					username: user.username,
 					truename: user.truename,
-					photo_url: user.toJSON().photo_url
+					photo_url: user.toObject().photo_url
 				}
 
 				response.ok(result)
 			} catch (error) {
-				console.log(error);
-				
 				response.status(400).send({
 					message: Antl.formatMessage('authentication.incorrectEmailOrPassword')
 				})
@@ -81,11 +88,34 @@ class UserController {
 		])
 
 		const rules = {
-			username: "required|alpha_numeric|min:4|max:32|unique:users,username",
+			username: [
+				validations.required(),
+				validations.alpha_numeric(),
+				validations.min([4]),
+				validations.max([32]),
+				validations.unique([ 'users', 'username' ]),
+				validations.regex([ USERNAME_VALIDATION ]),
+			],
 			email: "required|email|min:6|max:64|unique:users,email",
-			password: "required|confirmed|min:4|max:32",
-			truename: "required|min:4|max:100",
-			phone: "required|min:7|max:20",
+			password: [
+				validations.required(),
+				validations.min([4]),
+				validations.max([32]),
+				validations.confirmed(),
+				validations.regex([ PASSWORD_VALIDATION ]),
+			],
+			truename: [
+				validations.required(),
+				validations.min([4]),
+				validations.max([100]),
+				validations.regex([ ALFA_NUMBER_SPACE_CS ]),
+			],
+			phone: [
+				validations.required(),
+				validations.min([7]),
+				validations.max([20]),
+				validations.regex([ PHONE_VALIDATION ]),
+			],
 			gender: "required|alpha|in:F,M,O",
 			birth: [
 			  validations.required(),
@@ -98,7 +128,7 @@ class UserController {
 		const sintatization = {
 			username: "trim|lower_case",
 			email: "trim|lower_case|normalize_email",
-			truename: "trim|lower_case",
+			truename: "trim",
 			phone: "trim|lower_case",
 			gender: "trim|upper_case",
 			country: "trim|upper_case",
@@ -120,7 +150,6 @@ class UserController {
 			}
 		})
 		.catch( (dataError) => {
-            console.error("Erro Usuario: ", dataError)
 			response.unprocessableEntity(dataError)
 		})
 
@@ -130,7 +159,7 @@ class UserController {
 
 		const data = request.params
 		const rules = {
-			username: "required|string|min:3|max:32"
+			username: "required|alpha_numeric|min:3|max:32"
 		}
 		await validateAll(data, rules, Antl.list('validation'))
 		.then( async () => {
@@ -148,13 +177,20 @@ class UserController {
 					.with('playlists')
 					.first()
 
+				if(!dataRes) throw new NotFoundException(Antl.formatMessage('user.notFound'))
+
 				response.ok(dataRes)
 			} catch (error) {
-				response.internalServerError()
+				if(error instanceof NotFoundException){
+					response.notFound({
+						message: error.message
+					})
+				}else{
+					response.internalServerError()
+				}
 			}
 		})
 		.catch( dataError => {
-			console.error("Erro Usuario: ", dataError);
 			response.unprocessableEntity(dataError)
 		})
 
@@ -179,10 +215,28 @@ class UserController {
 		
 		const rules = {
 			id: "required|number",
+			username: [
+				validations.required(),
+				validations.alpha_numeric(),
+				validations.min([4]),
+				validations.max([32]),
+				validations.unique([ 'users', 'username' ]),
+				validations.regex([ USERNAME_VALIDATION ]),
+			],
 			email: "required|email|min:6|max:64|unique:users,email",
-			truename: "required|min:4|max:100",
-			phone: "required|min:7|max:20",
-			gender: "required|alpha|in:F,M",
+			truename: [
+				validations.required(),
+				validations.min([4]),
+				validations.max([100]),
+				validations.regex([ ALFA_NUMBER_SPACE_CS ]),
+			],
+			phone: [
+				validations.required(),
+				validations.min([7]),
+				validations.max([20]),
+				validations.regex([ PHONE_VALIDATION ]),
+			],
+			gender: "required|alpha|in:F,M,O",
 			birth: [
 			  validations.required(),
 			  validations.dateFormat(['YYYY-MM-DD']),
@@ -194,7 +248,7 @@ class UserController {
 		const sintatization = {
 			username: "trim|lower_case",
 			email: "trim|lower_case|normalize_email",
-			truename: "trim|lower_case",
+			truename: "trim",
 			phone: "trim|lower_case",
 			gender: "trim|upper_case",
 			country: "trim|upper_case",
@@ -208,11 +262,7 @@ class UserController {
 
 				const user = await User.findOrFail(data.id)
 
-				if(user.id !== auth.user.id) {
-					return response.forbidden({
-						message: Antl.formatMessage('users.userBadPerssionSave')
-					})
-				}
+				if(user.id !== auth.user.id) throw new ForbiddenException(Antl.formatMessage('users.userBadPerssionSave'))
 
 				sanitize(data, sintatization)
 
@@ -222,19 +272,27 @@ class UserController {
 				response.ok(user)
 
 			} catch (error) {
-				response.internalServerError()
+				if(error instanceof ForbiddenException){
+					response.forbidden({
+						message: error.message
+					})
+				}else if(error instanceof ModelNotFoundException){
+					response.notFound({
+						message: Antl.formatMessage('user.notFound')
+					})
+				}else{
+					response.internalServerError()
+				}
 			}
 
 		})
 		.catch(dataError => {
-			console.log("Error Validate", dataError)
 			response.unprocessableEntity(dataError)
 		})
 
 	}
 
-
-	async updatePasswordAuth( { request, auth, response }){
+	async updatePasswordAuth({ request, auth, response }){
 
 		const data = request.only([ 
 			"password_old",
@@ -246,13 +304,13 @@ class UserController {
 				validations.required(),
 				validations.min([6]),
 				validations.max([32]),
-				validations.regex([/[a-zA-Z0-9!@#$%&\-_.]/])
+				validations.regex([ PASSWORD_VALIDATION ])
 			],
 			password_new: [
 				validations.required(),
 				validations.min([6]),
 				validations.max([32]),
-				validations.regex([/[a-zA-Z0-9!@#$%&\-_.]/]),
+				validations.regex([ PASSWORD_VALIDATION ]),
 				validations.confirmed()
 			]
 		}
@@ -263,14 +321,11 @@ class UserController {
 			try {
 
 				const user = await User.findOrFail(auth.user.id)
-	
+				
 				const validedPassOld = await Hash.verify(data.password_old, user.password )
-	
-				if(!validedPassOld){
-					return response.forbidden({
-						message: Antl.formatMessage("user.passwordOldValidFailed")
-					})
-				}
+				
+
+				if(!validedPassOld) throw new ForbiddenException(Antl.formatMessage("user.passwordOldValidFailed"))
 	
 				user.merge({
 					password: data.password_new
@@ -279,8 +334,17 @@ class UserController {
 
 				
 			} catch (error) {
-                console.log(error)
-				response.internalServerError()
+				if(error instanceof ForbiddenException){
+					response.forbidden({
+						message: error.message
+					})
+				}else if(error instanceof ModelNotFoundException){
+					response.notFound({
+						message: Antl.formatMessage('user.notFound')
+					})
+				}else{
+					response.internalServerError()
+				}
 			}
 
 		})
@@ -291,7 +355,7 @@ class UserController {
 
 	}
 
-	fileImage({ params, response}){
+	fileImage({ params, response }){
 
 		if(params.file === ""){
 			return ""
